@@ -4,15 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"time"
-
-	"gorm.io/gorm"
 )
-
-type Company struct {
-	gorm.Model
-	Name            string `gorm:"primaryKey"`
-	CandidatePortal string
-}
 
 const (
 	FullTime   = "Full Time"
@@ -20,15 +12,30 @@ const (
 	Internship = "Internship"
 )
 
-type Application struct {
-	gorm.Model
-	Name    string   `gorm:"primaryKey"`
-	Company *Company `gorm:"foreignKey:Name"`
+type Company struct {
+	Name            string `gorm:"primaryKey"`
+	CandidatePortal string
+}
 
-	// Other types
+type Application struct {
+	Name            string `gorm:"primaryKey"`
+	CompanyName     string `gorm:"primaryKey"`
 	Type            string
 	ApplicationDate time.Time
+	Company         Company `gorm:"foreignKey:CompanyName;references:Name"`
 }
+
+// type User struct {
+// 	gorm.Model
+// 	CreditCard CreditCard `gorm:"foreignKey:UserName"`
+// 	// use UserName as foreign key
+// }
+
+// type CreditCard struct {
+// 	gorm.Model
+// 	Number   string `gorm:"primaryKey"`
+// 	UserName string
+// }
 
 func isValidURL(url string) bool {
 	// Regular expression for a basic URL validation
@@ -65,7 +72,7 @@ func (c Company) String() string {
 
 // APPLICATION
 
-func NewApplication(name, applicationType, applicationDate string, company *Company) (*Application, error) {
+func NewApplication(name, applicationType, applicationDate string, company Company) (*Application, error) {
 	// Application type must be one of the following: Full Time, Part Time, Internship
 	if applicationType != FullTime && applicationType != PartTime && applicationType != Internship {
 		return nil, fmt.Errorf("'%s' is not a valid application type", applicationType)
@@ -81,7 +88,7 @@ func NewApplication(name, applicationType, applicationDate string, company *Comp
 		Name:            name,
 		Type:            applicationType,
 		ApplicationDate: date,
-		Company:         company,
+		// Company:         company,
 	}, nil
 }
 
@@ -113,5 +120,5 @@ func (a *Application) SetApplicationDate(applicationDate string) error {
 }
 
 func (a Application) String() string {
-	return a.Name + ", " + a.Type + ", " + a.ApplicationDate.String() + ", " + a.Company.Name + ", " + a.Company.CandidatePortal
+	return a.Name + ", " + a.Type + ", " + a.ApplicationDate.String() + ", " /* + a.Company.String() */
 }

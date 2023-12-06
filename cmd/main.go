@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateCompany(db gorm.DB, name string) error {
+func CreateCompany(db *gorm.DB, name string) error {
 	var candidatePortal string
 
 	fmt.Print("Enter company candidate portal: ")
@@ -31,7 +31,7 @@ func CreateCompany(db gorm.DB, name string) error {
 	return nil
 }
 
-func CreateApplication(db gorm.DB) error {
+func CreateApplication(db *gorm.DB) error {
 
 	var name, applicationType, applicationDate, companyName string
 
@@ -67,7 +67,7 @@ func CreateApplication(db gorm.DB) error {
 		return res.Error
 	}
 
-	application, err := application.NewApplication(name, applicationType, applicationDate, &company)
+	application, err := application.NewApplication(name, applicationType, applicationDate, company)
 
 	if err != nil {
 		return err
@@ -146,15 +146,31 @@ func UpdateApplication(applications map[string]*application.Application) {
 	}
 }
 
-func ShowApplications(applications map[string]*application.Application) {
+func ShowApplications(db *gorm.DB) {
+	var applications []application.Application
+	res := db.Find(&applications)
+
+	if res.Error != nil {
+		fmt.Println(res.Error)
+		return
+	}
+
 	for _, application := range applications {
-		fmt.Println(*application)
+		fmt.Println(application)
 	}
 }
 
-func ShowCompanies(companies map[string]*application.Company) {
+func ShowCompanies(db *gorm.DB) {
+	var companies []application.Company
+	res := db.Find(&companies)
+
+	if res.Error != nil {
+		fmt.Println(res.Error)
+		return
+	}
+
 	for _, company := range companies {
-		fmt.Println(*company)
+		fmt.Println(company)
 	}
 }
 
@@ -168,7 +184,7 @@ func ShowMenu() {
 	fmt.Print("Enter your choice: ")
 }
 
-func CLITool(db gorm.DB) {
+func CLITool(db *gorm.DB) {
 	for {
 		// show menu
 		ShowMenu()
@@ -184,9 +200,9 @@ func CLITool(db gorm.DB) {
 		case "1":
 			CreateApplication(db)
 		case "2":
-			DeleteApplication(db)
+			// DeleteApplication(db)
 		case "3":
-			UpdateApplication(db)
+			// UpdateApplication(db)
 		case "4":
 			ShowApplications(db)
 		case "5":
@@ -200,14 +216,19 @@ func CLITool(db gorm.DB) {
 }
 
 func main() {
-	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=localhost user=postgres password=postgres dbname=gomanager port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		panic("failed to connect database")
 	}
 
-	//TODO: need to use db to do everything else
+	// Migrate the schema
+	err = db.AutoMigrate(&application.Company{}, &application.Application{})
+
+	if err != nil {
+		panic("failed to migrate database")
+	}
 
 	CLITool(db)
 }

@@ -200,13 +200,46 @@ func ShowCompanies(db *gorm.DB) {
 	}
 }
 
+func ShowCompanyApplications(db *gorm.DB) error {
+	var companyName string
+
+	fmt.Print("Enter company name: ")
+	fmt.Scanln(&companyName)
+
+	var company application.Company
+	res := db.Limit(1).Find(&company, "name = ?", companyName)
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return fmt.Errorf("company does not exist")
+	}
+
+	var applications []application.Application
+	res = db.Find(&applications, "company_name = ?", companyName)
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	fmt.Println(company)
+	for _, application := range applications {
+		fmt.Println(application)
+	}
+
+	return nil
+}
+
 func ShowMenu() {
 	fmt.Println("1. Create application")
 	fmt.Println("2. Delete application")
 	fmt.Println("3. Update application")
 	fmt.Println("4. Show applications")
 	fmt.Println("5. Show companies")
-	fmt.Println("6. Exit")
+	fmt.Println("6. Show company applications")
+	fmt.Println("7. Exit")
 	fmt.Print("Enter your choice: ")
 }
 
@@ -235,6 +268,8 @@ func CLITool(db *gorm.DB) {
 		case "5":
 			ShowCompanies(db)
 		case "6":
+			err = ShowCompanyApplications(db)
+		case "7":
 			os.Exit(0)
 		default:
 			fmt.Println("Invalid input")

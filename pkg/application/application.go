@@ -25,18 +25,6 @@ type Application struct {
 	Company         Company `gorm:"foreignKey:CompanyName;references:Name"`
 }
 
-// type User struct {
-// 	gorm.Model
-// 	CreditCard CreditCard `gorm:"foreignKey:UserName"`
-// 	// use UserName as foreign key
-// }
-
-// type CreditCard struct {
-// 	gorm.Model
-// 	Number   string `gorm:"primaryKey"`
-// 	UserName string
-// }
-
 func isValidURL(url string) bool {
 	// Regular expression for a basic URL validation
 	// Note: This is a simple example and might not cover all edge cases.
@@ -120,5 +108,5 @@ func (a *Application) SetApplicationDate(applicationDate string) error {
 }
 
 func (a Application) String() string {
-	return a.Name + ", " + a.Type + ", " + a.ApplicationDate.String() + ", " /* + a.Company.String() */
+	return a.Name + ", " + a.Type + ", " + a.ApplicationDate.String()
 }

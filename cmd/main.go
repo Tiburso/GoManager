@@ -144,9 +144,8 @@ func UpdateApplication(db *gorm.DB) error {
 		return fmt.Errorf("application does not exist")
 	}
 
-	fmt.Println("1. Update name")
-	fmt.Println("2. Update type")
-	fmt.Println("3. Update date")
+	fmt.Println("1. Update type")
+	fmt.Println("2. Update date")
 	fmt.Print("Enter what you want to update: ")
 	updateType = ReadLine(scanner)
 
@@ -154,15 +153,6 @@ func UpdateApplication(db *gorm.DB) error {
 
 	switch updateType {
 	case "1":
-		var newName string
-		fmt.Print("Enter new name: ")
-		newName = ReadLine(scanner)
-		err := app.SetName(newName)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-	case "2":
 		var newType string
 		fmt.Print("Enter new type: ")
 		newType = ReadLine(scanner)
@@ -172,7 +162,7 @@ func UpdateApplication(db *gorm.DB) error {
 			fmt.Println(err)
 		}
 
-	case "3":
+	case "2":
 		var newDate string
 		fmt.Print("Enter new date: ")
 		newDate = ReadLine(scanner)

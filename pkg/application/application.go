@@ -87,5 +87,5 @@ func (a Application) String() string {
 	}
 
 	// for the time i only want the format of yyyy-mm-dd
-	return a.Name + ", " + a.Type + ", " + a.ApplicationDate.Format("2006-01-02") + company_string
+	return a.Name + ", " + a.Type + ", " + a.Status + ", " + a.ApplicationDate.Format("2006-01-02") + company_string
 }

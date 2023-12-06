@@ -82,11 +82,13 @@ func UpdateApplication(applications map[string]*application.Application) {
 		return
 	}
 
-	fmt.Print("1. Update name")
-	fmt.Print("2. Update type")
-	fmt.Print("3. Update date")
+	fmt.Println("1. Update name")
+	fmt.Println("2. Update type")
+	fmt.Println("3. Update date")
 	fmt.Print("Enter what you want to update: ")
 	fmt.Scanln(&updateType)
+
+	updateType = strings.TrimSpace(updateType)
 
 	switch updateType {
 	case "1":

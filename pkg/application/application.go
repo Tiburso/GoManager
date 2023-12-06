@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"regexp"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Company struct {
-	Name            string
+	gorm.Model
+	Name            string `gorm:"primaryKey"`
 	CandidatePortal string
 }
 
@@ -18,10 +21,13 @@ const (
 )
 
 type Application struct {
-	Name            string
+	gorm.Model
+	Name    string   `gorm:"primaryKey"`
+	Company *Company `gorm:"foreignKey:Name"`
+
+	// Other types
 	Type            string
 	ApplicationDate time.Time
-	Company         *Company
 }
 
 func isValidURL(url string) bool {

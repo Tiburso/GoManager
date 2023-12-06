@@ -6,9 +6,11 @@ import (
 	"strings"
 
 	"github.com/Tiburso/GoManager/pkg/application"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func CreateCompany(companies map[string]*application.Company, name string) error {
+func CreateCompany(db gorm.DB, name string) error {
 	var candidatePortal string
 
 	fmt.Print("Enter company candidate portal: ")
@@ -20,12 +22,16 @@ func CreateCompany(companies map[string]*application.Company, name string) error
 		return err
 	}
 
-	companies[name] = company
+	res := db.Create(&company)
+
+	if res.Error != nil {
+		return res.Error
+	}
 
 	return nil
 }
 
-func CreateApplication(companies map[string]*application.Company, applications map[string]*application.Application) error {
+func CreateApplication(db gorm.DB) error {
 
 	var name, applicationType, applicationDate, companyName string
 
@@ -38,24 +44,40 @@ func CreateApplication(companies map[string]*application.Company, applications m
 	fmt.Print("Enter company name: ")
 	fmt.Scanln(&companyName)
 
-	if _, ok := companies[companyName]; !ok {
+	res := db.Find(&application.Company{}, "name = ?", companyName)
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	// if no rows affected, create company
+	if res.RowsAffected == 0 {
 		fmt.Println("Company not found!")
-		err := CreateCompany(companies, companyName)
+		err := CreateCompany(db, companyName)
 
 		if err != nil {
 			return err
 		}
 	}
 
-	company := companies[companyName]
+	var company application.Company
+	res = db.Find(&company, "name = ?", companyName)
 
-	application, err := application.NewApplication(name, applicationType, applicationDate, company)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	application, err := application.NewApplication(name, applicationType, applicationDate, &company)
 
 	if err != nil {
 		return err
 	}
 
-	applications[name] = application
+	res = db.Create(&application)
+
+	if res.Error != nil {
+		return res.Error
+	}
 
 	return nil
 }
@@ -146,10 +168,7 @@ func ShowMenu() {
 	fmt.Print("Enter your choice: ")
 }
 
-func main() {
-	companies := make(map[string]*application.Company)
-	applications := make(map[string]*application.Application)
-
+func CLITool(db gorm.DB) {
 	for {
 		// show menu
 		ShowMenu()
@@ -163,19 +182,32 @@ func main() {
 		// switch on user input
 		switch input {
 		case "1":
-			CreateApplication(companies, applications)
+			CreateApplication(db)
 		case "2":
-			DeleteApplication(applications)
+			DeleteApplication(db)
 		case "3":
-			UpdateApplication(applications)
+			UpdateApplication(db)
 		case "4":
-			ShowApplications(applications)
+			ShowApplications(db)
 		case "5":
-			ShowCompanies(companies)
+			ShowCompanies(db)
 		case "6":
 			os.Exit(0)
 		default:
 			fmt.Println("Invalid input")
 		}
 	}
+}
+
+func main() {
+	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	//TODO: need to use db to do everything else
+
+	CLITool(db)
 }

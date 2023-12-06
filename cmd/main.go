@@ -35,44 +35,41 @@ func CreateApplication(db *gorm.DB) error {
 
 	var name, applicationType, applicationDate, companyName string
 
+	// checking if application and company already exists
+
 	fmt.Print("Enter application name: ")
 	fmt.Scanln(&name)
-	fmt.Print("Enter application type: ")
-	fmt.Scanln(&applicationType)
-	fmt.Print("Enter application date: ")
-	fmt.Scanln(&applicationDate)
 	fmt.Print("Enter company name: ")
 	fmt.Scanln(&companyName)
 
 	// first check if application already exists
 	var app application.Application
 	// check with name and company name
-	res := db.First(&app, "name = ? AND company_name = ?", name, companyName)
+	res := db.Limit(1).Find(&app, "name = ? AND company_name = ?", name, companyName)
 
-	if res.Error != nil && res.Error != gorm.ErrRecordNotFound {
+	if res.Error != nil {
 		return res.Error
 	}
 
 	if app.Name != "" {
-		fmt.Println("Application already exists!")
+		return fmt.Errorf("application already exists")
+	}
+
+	res = db.Limit(1).Find(&application.Company{}, "name = ?", companyName)
+
+	if res.Error != nil {
 		return nil
 	}
 
-	res = db.First(&application.Company{}, "name = ?", companyName)
+	if res.RowsAffected == 0 {
+		err := CreateCompany(db, companyName)
 
-	if res.Error != nil {
-
-		if res.Error == gorm.ErrRecordNotFound {
-			fmt.Println("Company not found!")
-			err := CreateCompany(db, companyName)
-
-			if err != nil {
-				return err
-			}
-		} else {
-
-			return res.Error
+		if err != nil {
+			return err
 		}
+
+	} else {
+		return res.Error
 	}
 
 	var company application.Company
@@ -81,6 +78,12 @@ func CreateApplication(db *gorm.DB) error {
 	if res.Error != nil {
 		return res.Error
 	}
+
+	// Second Part creating the actual application
+	fmt.Print("Enter application type: ")
+	fmt.Scanln(&applicationType)
+	fmt.Print("Enter application date: ")
+	fmt.Scanln(&applicationDate)
 
 	application, err := application.NewApplication(name, applicationType, applicationDate, company)
 
@@ -219,13 +222,14 @@ func CLITool(db *gorm.DB) {
 		input = strings.TrimSpace(input)
 
 		// switch on user input
+		var err error
 		switch input {
 		case "1":
-			CreateApplication(db)
+			err = CreateApplication(db)
 		case "2":
-			DeleteApplication(db)
+			err = DeleteApplication(db)
 		case "3":
-			// UpdateApplication(db)
+			// err = UpdateApplication(db)
 		case "4":
 			ShowApplications(db)
 		case "5":
@@ -234,6 +238,10 @@ func CLITool(db *gorm.DB) {
 			os.Exit(0)
 		default:
 			fmt.Println("Invalid input")
+		}
+
+		if err != nil {
+			fmt.Println(err)
 		}
 	}
 }

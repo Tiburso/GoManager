@@ -125,7 +125,7 @@ func TestString(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	expected := "Test Application, Full Time, 2021-01-01, Applied, Test Company, https://www.testcompany.com"
+	expected := "Test Application, Full Time, Applied, 2021-01-01, https://www.testcompany.com"
 	if app.String() != expected {
 		t.Fatalf("Expected %s, got %s", expected, app.String())
 	}

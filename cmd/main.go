@@ -41,12 +41,24 @@ func CreateApplication(companies map[string]Company, applications map[string]App
 	fmt.Print("Enter company name: ")
 	fmt.Scanln(&companyName)
 
-	_, ok := companies[companyName]
-
-	if !ok {
+	if _, ok := companies[companyName]; !ok {
 		fmt.Println("Company not found!")
-		CreateCompany(companies, companyName)
+		err := CreateCompany(companies, companyName)
+
+		if err != nil {
+			return err
+		}
 	}
+
+	company := companies[companyName]
+
+	application, err := application.NewApplication(name, applicationType, applicationDate, company)
+
+	if err != nil {
+		return err
+	}
+
+	applications[name] = application
 
 	return nil
 }

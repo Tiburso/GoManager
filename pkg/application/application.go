@@ -21,7 +21,7 @@ type Application struct {
 	Name            string
 	Type            string
 	ApplicationDate time.Time
-	Company         Company
+	Company         *Company
 }
 
 func isValidURL(url string) bool {
@@ -59,7 +59,7 @@ func (c Company) String() string {
 
 // APPLICATION
 
-func NewApplication(name, applicationType, applicationDate string, company Company) (*Application, error) {
+func NewApplication(name, applicationType, applicationDate string, company *Company) (*Application, error) {
 	// Application type must be one of the following: Full Time, Part Time, Internship
 	if applicationType != FullTime && applicationType != PartTime && applicationType != Internship {
 		return nil, fmt.Errorf("'%s' is not a valid application type", applicationType)

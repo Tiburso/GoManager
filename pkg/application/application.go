@@ -15,6 +15,7 @@ const (
 type Company struct {
 	Name            string `gorm:"primaryKey"`
 	CandidatePortal string
+	Applications    []Application `gorm:"foreignKey:CompanyName;references:Name"`
 }
 
 type Application struct {
@@ -108,5 +109,13 @@ func (a *Application) SetApplicationDate(applicationDate string) error {
 }
 
 func (a Application) String() string {
-	return a.Name + ", " + a.Type + ", " + a.ApplicationDate.String()
+	company_string := ""
+
+	//if company exists
+	if a.Company.Name != "" {
+		company_string = ", " + a.Company.CandidatePortal
+	}
+
+	// for the time i only want the format of yyyy-mm-dd
+	return a.Name + ", " + a.Type + ", " + a.ApplicationDate.Format("2006-01-02") + company_string
 }

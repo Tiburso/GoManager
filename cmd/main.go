@@ -186,7 +186,7 @@ func UpdateApplication(db *gorm.DB) error {
 
 func ShowApplications(db *gorm.DB) {
 	var applications []application.Application
-	res := db.Find(&applications)
+	res := db.Model(&application.Application{}).Preload("Company").Find(&applications)
 
 	if res.Error != nil {
 		fmt.Println(res.Error)

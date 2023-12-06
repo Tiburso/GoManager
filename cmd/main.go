@@ -302,7 +302,7 @@ func CLITool(db *gorm.DB) error {
 }
 
 func main() {
-	dsn := "host=localhost user=postgres password=postgres dbname=gomanager port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=postgres dbname=gomanager port=5432"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {

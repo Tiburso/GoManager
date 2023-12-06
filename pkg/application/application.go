@@ -5,24 +5,29 @@ import (
 	"time"
 )
 
+// Types of applications
 const (
 	FullTime   = "Full Time"
 	PartTime   = "Part Time"
 	Internship = "Internship"
 )
 
+const (
+	Applied  = "Applied"
+	Rejected = "Rejected"
+	Accepted = "Accepted"
+)
+
 type Application struct {
 	Name            string `gorm:"primaryKey"`
 	CompanyName     string `gorm:"primaryKey"`
 	Type            string
+	Status          string
 	ApplicationDate time.Time
 	Company         Company `gorm:"foreignKey:CompanyName;references:Name"`
 }
 
-// APPLICATION
-
 func NewApplication(name, applicationType, applicationDate string, company Company) (*Application, error) {
-	// Application type must be one of the following: Full Time, Part Time, Internship
 	if applicationType != FullTime && applicationType != PartTime && applicationType != Internship {
 		return nil, fmt.Errorf("'%s' is not a valid application type", applicationType)
 	}
@@ -37,12 +42,17 @@ func NewApplication(name, applicationType, applicationDate string, company Compa
 		Name:            name,
 		Type:            applicationType,
 		ApplicationDate: date,
+		Status:          Applied,
 		Company:         company,
 	}, nil
 }
 
-func (a *Application) SetName(name string) error {
-	a.Name = name
+func (a *Application) SetStatus(status string) error {
+	if status != Applied && status != Rejected && status != Accepted {
+		return fmt.Errorf("'%s' is not a valid application status", status)
+	}
+
+	a.Status = status
 
 	return nil
 }

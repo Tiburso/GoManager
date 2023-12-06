@@ -146,6 +146,7 @@ func UpdateApplication(db *gorm.DB) error {
 
 	fmt.Println("1. Update type")
 	fmt.Println("2. Update date")
+	fmt.Println("3. Update status")
 	fmt.Print("Enter what you want to update: ")
 	updateType = ReadLine(scanner)
 
@@ -153,26 +154,34 @@ func UpdateApplication(db *gorm.DB) error {
 
 	switch updateType {
 	case "1":
-		var newType string
 		fmt.Print("Enter new type: ")
-		newType = ReadLine(scanner)
+		newType := ReadLine(scanner)
 		err := app.SetType(newType)
 
 		if err != nil {
-			fmt.Println(err)
+			return err
 		}
 
 	case "2":
-		var newDate string
 		fmt.Print("Enter new date: ")
-		newDate = ReadLine(scanner)
+		newDate := ReadLine(scanner)
 		err := app.SetApplicationDate(newDate)
 
 		if err != nil {
-			fmt.Println(err)
+			return err
 		}
+
+	case "3":
+		fmt.Print("Enter new status: ")
+		newStatus := ReadLine(scanner)
+		err := app.SetStatus(newStatus)
+
+		if err != nil {
+			return err
+		}
+
 	default:
-		fmt.Println("Invalid input")
+		return fmt.Errorf("invalid input")
 	}
 
 	res = db.Save(&app)

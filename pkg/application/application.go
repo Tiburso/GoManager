@@ -79,6 +79,33 @@ func NewApplication(name, applicationType, applicationDate string, company *Comp
 	}, nil
 }
 
+func (a *Application) SetName(name string) error {
+	a.Name = name
+
+	return nil
+}
+
+func (a *Application) SetType(applicationType string) error {
+	if applicationType != FullTime && applicationType != PartTime && applicationType != Internship {
+		return fmt.Errorf("'%s' is not a valid application type", applicationType)
+	}
+
+	a.Type = applicationType
+
+	return nil
+}
+
+func (a *Application) SetApplicationDate(applicationDate string) error {
+	date, err := time.Parse("2006-01-02", applicationDate)
+	if err != nil {
+		return fmt.Errorf("'%s' is not a valid date", applicationDate)
+	}
+
+	a.ApplicationDate = date
+
+	return nil
+}
+
 func (a Application) String() string {
 	return a.Name + ", " + a.Type + ", " + a.ApplicationDate.String() + ", " + a.Company.Name + ", " + a.Company.CandidatePortal
 }

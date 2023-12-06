@@ -8,10 +8,7 @@ import (
 	"github.com/Tiburso/GoManager/pkg/application"
 )
 
-type Company *application.Company
-type Application *application.Application
-
-func CreateCompany(companies map[string]Company, name string) error {
+func CreateCompany(companies map[string]*application.Company, name string) error {
 	var candidatePortal string
 
 	fmt.Print("Enter company candidate portal: ")
@@ -28,7 +25,7 @@ func CreateCompany(companies map[string]Company, name string) error {
 	return nil
 }
 
-func CreateApplication(companies map[string]Company, applications map[string]Application) error {
+func CreateApplication(companies map[string]*application.Company, applications map[string]*application.Application) error {
 
 	var name, applicationType, applicationDate, companyName string
 
@@ -63,23 +60,77 @@ func CreateApplication(companies map[string]Company, applications map[string]App
 	return nil
 }
 
-func DeleteApplication() {
+func DeleteApplication(applications map[string]*application.Application) {
+	var name string
 
+	fmt.Print("Enter application name: ")
+	fmt.Scanln(&name)
+
+	delete(applications, name)
 }
 
-func UpdateApplication() {
+func UpdateApplication(applications map[string]*application.Application) {
+	var name, updateType string
 
-}
+	fmt.Print("Enter application name: ")
+	fmt.Scanln(&name)
 
-func ShowApplications(applications map[string]Application) {
-	for _, application := range applications {
-		fmt.Println(application)
+	app, ok := applications[name]
+
+	if !ok {
+		fmt.Println("Application not found!")
+		return
+	}
+
+	fmt.Print("1. Update name")
+	fmt.Print("2. Update type")
+	fmt.Print("3. Update date")
+	fmt.Print("Enter what you want to update: ")
+	fmt.Scanln(&updateType)
+
+	switch updateType {
+	case "1":
+		var newName string
+		fmt.Print("Enter new name: ")
+		fmt.Scanln(&newName)
+		err := app.SetName(newName)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+	case "2":
+		var newType string
+		fmt.Print("Enter new type: ")
+		fmt.Scanln(&newType)
+		err := app.SetType(newType)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+	case "3":
+		var newDate string
+		fmt.Print("Enter new date: ")
+		fmt.Scanln(&newDate)
+		err := app.SetApplicationDate(newDate)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+	default:
+		fmt.Println("Invalid input")
 	}
 }
 
-func ShowCompanies(companies map[string]Company) {
+func ShowApplications(applications map[string]*application.Application) {
+	for _, application := range applications {
+		fmt.Println(*application)
+	}
+}
+
+func ShowCompanies(companies map[string]*application.Company) {
 	for _, company := range companies {
-		fmt.Println(company)
+		fmt.Println(*company)
 	}
 }
 
@@ -94,8 +145,8 @@ func ShowMenu() {
 }
 
 func main() {
-	companies := make(map[string]Company)
-	applications := make(map[string]Application)
+	companies := make(map[string]*application.Company)
+	applications := make(map[string]*application.Application)
 
 	for {
 		// show menu
@@ -112,9 +163,9 @@ func main() {
 		case "1":
 			CreateApplication(companies, applications)
 		case "2":
-			DeleteApplication()
+			DeleteApplication(applications)
 		case "3":
-			UpdateApplication()
+			UpdateApplication(applications)
 		case "4":
 			ShowApplications(applications)
 		case "5":

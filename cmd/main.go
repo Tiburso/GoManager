@@ -228,7 +228,7 @@ func ShowCompanyApplications(db *gorm.DB) error {
 	companyName = ReadLine(bufio.NewScanner(os.Stdin))
 
 	var company application.Company
-	res := db.Limit(1).Find(&company, "name = ?", companyName)
+	res := db.Model(&application.Company{}).Preload("Applications").Limit(1).Find(&company, "name = ?", companyName)
 
 	if res.Error != nil {
 		return res.Error
@@ -238,15 +238,9 @@ func ShowCompanyApplications(db *gorm.DB) error {
 		return fmt.Errorf("company does not exist")
 	}
 
-	var applications []application.Application
-	res = db.Find(&applications, "company_name = ?", companyName)
-
-	if res.Error != nil {
-		return res.Error
-	}
-
 	fmt.Println(company)
-	for _, application := range applications {
+
+	for _, application := range company.GetApplications() {
 		fmt.Println(application)
 	}
 

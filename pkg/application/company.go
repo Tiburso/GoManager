@@ -40,6 +40,10 @@ func NewCompany(name, candidatePortal string) (*Company, error) {
 	}, nil
 }
 
+func (c *Company) GetApplications() []Application {
+	return c.Applications
+}
+
 func (c Company) String() string {
 	return c.Name + ", " + c.CandidatePortal
 }

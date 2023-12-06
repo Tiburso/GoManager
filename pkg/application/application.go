@@ -88,7 +88,7 @@ func NewApplication(name, applicationType, applicationDate string, company Compa
 		Name:            name,
 		Type:            applicationType,
 		ApplicationDate: date,
-		// Company:         company,
+		Company:         company,
 	}, nil
 }
 

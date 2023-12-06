@@ -44,24 +44,39 @@ func CreateApplication(db *gorm.DB) error {
 	fmt.Print("Enter company name: ")
 	fmt.Scanln(&companyName)
 
-	res := db.Find(&application.Company{}, "name = ?", companyName)
+	// first check if application already exists
+	var app application.Application
+	// check with name and company name
+	res := db.First(&app, "name = ? AND company_name = ?", name, companyName)
 
-	if res.Error != nil {
+	if res.Error != nil && res.Error != gorm.ErrRecordNotFound {
 		return res.Error
 	}
 
-	// if no rows affected, create company
-	if res.RowsAffected == 0 {
-		fmt.Println("Company not found!")
-		err := CreateCompany(db, companyName)
+	if app.Name != "" {
+		fmt.Println("Application already exists!")
+		return nil
+	}
 
-		if err != nil {
-			return err
+	res = db.First(&application.Company{}, "name = ?", companyName)
+
+	if res.Error != nil {
+
+		if res.Error == gorm.ErrRecordNotFound {
+			fmt.Println("Company not found!")
+			err := CreateCompany(db, companyName)
+
+			if err != nil {
+				return err
+			}
+		} else {
+
+			return res.Error
 		}
 	}
 
 	var company application.Company
-	res = db.Find(&company, "name = ?", companyName)
+	res = db.First(&company, "name = ?", companyName)
 
 	if res.Error != nil {
 		return res.Error
@@ -82,13 +97,21 @@ func CreateApplication(db *gorm.DB) error {
 	return nil
 }
 
-func DeleteApplication(applications map[string]*application.Application) {
-	var name string
+func DeleteApplication(db *gorm.DB) error {
+	var name, companyName string
 
 	fmt.Print("Enter application name: ")
 	fmt.Scanln(&name)
+	fmt.Print("Enter company name: ")
+	fmt.Scanln(&companyName)
 
-	delete(applications, name)
+	res := db.Where("name = ? AND company_name = ?", name, companyName).Delete(&application.Application{})
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
 }
 
 func UpdateApplication(applications map[string]*application.Application) {
@@ -200,7 +223,7 @@ func CLITool(db *gorm.DB) {
 		case "1":
 			CreateApplication(db)
 		case "2":
-			// DeleteApplication(db)
+			DeleteApplication(db)
 		case "3":
 			// UpdateApplication(db)
 		case "4":

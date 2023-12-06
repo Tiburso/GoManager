@@ -117,17 +117,21 @@ func DeleteApplication(db *gorm.DB) error {
 	return nil
 }
 
-func UpdateApplication(applications map[string]*application.Application) {
+func UpdateApplication(db *gorm.DB) error {
 	var name, updateType string
 
 	fmt.Print("Enter application name: ")
 	fmt.Scanln(&name)
 
-	app, ok := applications[name]
+	var app application.Application
+	res := db.Limit(1).Find(&app, "name = ?", name)
 
-	if !ok {
-		fmt.Println("Application not found!")
-		return
+	if res.Error != nil {
+		return res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return fmt.Errorf("application does not exist")
 	}
 
 	fmt.Println("1. Update name")
@@ -170,6 +174,14 @@ func UpdateApplication(applications map[string]*application.Application) {
 	default:
 		fmt.Println("Invalid input")
 	}
+
+	res = db.Save(&app)
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
 }
 
 func ShowApplications(db *gorm.DB) {
@@ -262,7 +274,7 @@ func CLITool(db *gorm.DB) {
 		case "2":
 			err = DeleteApplication(db)
 		case "3":
-			// err = UpdateApplication(db)
+			err = UpdateApplication(db)
 		case "4":
 			ShowApplications(db)
 		case "5":

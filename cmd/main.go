@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -10,11 +11,19 @@ import (
 	"gorm.io/gorm"
 )
 
+func ReadLine(scanner *bufio.Scanner) string {
+	if scanner.Scan() {
+		return strings.TrimSpace(scanner.Text())
+	}
+
+	return ""
+}
+
 func CreateCompany(db *gorm.DB, name string) error {
 	var candidatePortal string
 
 	fmt.Print("Enter company candidate portal: ")
-	fmt.Scanln(&candidatePortal)
+	candidatePortal = ReadLine(bufio.NewScanner(os.Stdin))
 
 	company, err := application.NewCompany(name, candidatePortal)
 
@@ -36,22 +45,20 @@ func CreateApplication(db *gorm.DB) error {
 	var name, applicationType, applicationDate, companyName string
 
 	// checking if application and company already exists
+	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Print("Enter application name: ")
-	fmt.Scanln(&name)
+	name = ReadLine(scanner)
 	fmt.Print("Enter company name: ")
-	fmt.Scanln(&companyName)
+	companyName = ReadLine(scanner)
 
-	// first check if application already exists
-	var app application.Application
-	// check with name and company name
-	res := db.Limit(1).Find(&app, "name = ? AND company_name = ?", name, companyName)
+	res := db.Limit(1).Find(&application.Application{}, "name = ? AND company_name = ?", name, companyName)
 
 	if res.Error != nil {
 		return res.Error
 	}
 
-	if app.Name != "" {
+	if res.RowsAffected != 0 {
 		return fmt.Errorf("application already exists")
 	}
 
@@ -67,9 +74,6 @@ func CreateApplication(db *gorm.DB) error {
 		if err != nil {
 			return err
 		}
-
-	} else {
-		return res.Error
 	}
 
 	var company application.Company
@@ -81,9 +85,9 @@ func CreateApplication(db *gorm.DB) error {
 
 	// Second Part creating the actual application
 	fmt.Print("Enter application type: ")
-	fmt.Scanln(&applicationType)
+	applicationType = ReadLine(scanner)
 	fmt.Print("Enter application date: ")
-	fmt.Scanln(&applicationDate)
+	applicationDate = ReadLine(scanner)
 
 	application, err := application.NewApplication(name, applicationType, applicationDate, company)
 
@@ -103,10 +107,12 @@ func CreateApplication(db *gorm.DB) error {
 func DeleteApplication(db *gorm.DB) error {
 	var name, companyName string
 
+	scanner := bufio.NewScanner(os.Stdin)
+
 	fmt.Print("Enter application name: ")
-	fmt.Scanln(&name)
+	name = ReadLine(scanner)
 	fmt.Print("Enter company name: ")
-	fmt.Scanln(&companyName)
+	companyName = ReadLine(scanner)
 
 	res := db.Where("name = ? AND company_name = ?", name, companyName).Delete(&application.Application{})
 
@@ -118,13 +124,17 @@ func DeleteApplication(db *gorm.DB) error {
 }
 
 func UpdateApplication(db *gorm.DB) error {
-	var name, updateType string
+	var name, companyName, updateType string
+
+	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Print("Enter application name: ")
-	fmt.Scanln(&name)
+	name = ReadLine(scanner)
+	fmt.Print("Enter company name: ")
+	companyName = ReadLine(scanner)
 
 	var app application.Application
-	res := db.Limit(1).Find(&app, "name = ?", name)
+	res := db.Limit(1).Find(&app, "name = ? AND company_name = ?", name, companyName)
 
 	if res.Error != nil {
 		return res.Error
@@ -138,7 +148,7 @@ func UpdateApplication(db *gorm.DB) error {
 	fmt.Println("2. Update type")
 	fmt.Println("3. Update date")
 	fmt.Print("Enter what you want to update: ")
-	fmt.Scanln(&updateType)
+	updateType = ReadLine(scanner)
 
 	updateType = strings.TrimSpace(updateType)
 
@@ -146,7 +156,7 @@ func UpdateApplication(db *gorm.DB) error {
 	case "1":
 		var newName string
 		fmt.Print("Enter new name: ")
-		fmt.Scanln(&newName)
+		newName = ReadLine(scanner)
 		err := app.SetName(newName)
 
 		if err != nil {
@@ -155,7 +165,7 @@ func UpdateApplication(db *gorm.DB) error {
 	case "2":
 		var newType string
 		fmt.Print("Enter new type: ")
-		fmt.Scanln(&newType)
+		newType = ReadLine(scanner)
 		err := app.SetType(newType)
 
 		if err != nil {
@@ -165,7 +175,7 @@ func UpdateApplication(db *gorm.DB) error {
 	case "3":
 		var newDate string
 		fmt.Print("Enter new date: ")
-		fmt.Scanln(&newDate)
+		newDate = ReadLine(scanner)
 		err := app.SetApplicationDate(newDate)
 
 		if err != nil {
@@ -216,7 +226,7 @@ func ShowCompanyApplications(db *gorm.DB) error {
 	var companyName string
 
 	fmt.Print("Enter company name: ")
-	fmt.Scanln(&companyName)
+	companyName = ReadLine(bufio.NewScanner(os.Stdin))
 
 	var company application.Company
 	res := db.Limit(1).Find(&company, "name = ?", companyName)
@@ -255,16 +265,15 @@ func ShowMenu() {
 	fmt.Print("Enter your choice: ")
 }
 
-func CLITool(db *gorm.DB) {
+func CLITool(db *gorm.DB) error {
+	scanner := bufio.NewScanner(os.Stdin)
+
 	for {
 		// show menu
 		ShowMenu()
 
 		// read user input from stdin
-		var input string
-		fmt.Scanln(&input)
-
-		input = strings.TrimSpace(input)
+		input := ReadLine(scanner)
 
 		// switch on user input
 		var err error
@@ -282,13 +291,13 @@ func CLITool(db *gorm.DB) {
 		case "6":
 			err = ShowCompanyApplications(db)
 		case "7":
-			os.Exit(0)
+			return nil
 		default:
 			fmt.Println("Invalid input")
 		}
 
 		if err != nil {
-			fmt.Println(err)
+			return err
 		}
 	}
 }
@@ -308,5 +317,9 @@ func main() {
 		panic("failed to migrate database")
 	}
 
-	CLITool(db)
+	err = CLITool(db)
+
+	if err != nil {
+		panic(err)
+	}
 }

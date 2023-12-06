@@ -71,12 +71,16 @@ func UpdateApplication() {
 
 }
 
-func ShowApplications() {
-
+func ShowApplications(applications map[string]Application) {
+	for _, application := range applications {
+		fmt.Println(application)
+	}
 }
 
-func ShowCompanies() {
-
+func ShowCompanies(companies map[string]Company) {
+	for _, company := range companies {
+		fmt.Println(company)
+	}
 }
 
 func ShowMenu() {
@@ -112,9 +116,9 @@ func main() {
 		case "3":
 			UpdateApplication()
 		case "4":
-			ShowApplications()
+			ShowApplications(applications)
 		case "5":
-			ShowCompanies()
+			ShowCompanies(companies)
 		case "6":
 			os.Exit(0)
 		default:

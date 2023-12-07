@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Tiburso/GoManager/pkg/application"
+	"github.com/Tiburso/GoManager/internal/application"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

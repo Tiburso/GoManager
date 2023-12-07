@@ -2,54 +2,52 @@ package application
 
 import (
 	"testing"
-
-	a "github.com/Tiburso/GoManager/pkg/application"
 )
 
 func TestNewApplication(t *testing.T) {
-	company, err := a.NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	_, err = a.NewApplication("Test Application", a.FullTime, "2021-01-01", *company)
+	_, err = NewApplication("Test Application", FullTime, "2021-01-01", *company)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	_, err = a.NewApplication("Test Application", "Invalid Type", "2021-01-01", *company)
+	_, err = NewApplication("Test Application", "Invalid Type", "2021-01-01", *company)
 	if err == nil {
 		t.Fatalf("Expected error, got %v", err)
 	}
 
-	_, err = a.NewApplication("Test Application", a.FullTime, "Invalid Date", *company)
+	_, err = NewApplication("Test Application", FullTime, "Invalid Date", *company)
 	if err == nil {
 		t.Fatalf("Expected error, got %v", err)
 	}
 }
 
 func TestSetStatus(t *testing.T) {
-	company, err := a.NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	app, err := a.NewApplication("Test Application", a.FullTime, "2021-01-01", *company)
+	app, err := NewApplication("Test Application", FullTime, "2021-01-01", *company)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	err = app.SetStatus(a.Applied)
+	err = app.SetStatus(Applied)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	err = app.SetStatus(a.Rejected)
+	err = app.SetStatus(Rejected)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	err = app.SetStatus(a.Accepted)
+	err = app.SetStatus(Accepted)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -61,27 +59,27 @@ func TestSetStatus(t *testing.T) {
 }
 
 func TestSetType(t *testing.T) {
-	company, err := a.NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	app, err := a.NewApplication("Test Application", a.FullTime, "2021-01-01", *company)
+	app, err := NewApplication("Test Application", FullTime, "2021-01-01", *company)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	err = app.SetType(a.FullTime)
+	err = app.SetType(FullTime)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	err = app.SetType(a.PartTime)
+	err = app.SetType(PartTime)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	err = app.SetType(a.Internship)
+	err = app.SetType(Internship)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -93,12 +91,12 @@ func TestSetType(t *testing.T) {
 }
 
 func TestSetApplicationDate(t *testing.T) {
-	company, err := a.NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	app, err := a.NewApplication("Test Application", a.FullTime, "2021-01-01", *company)
+	app, err := NewApplication("Test Application", FullTime, "2021-01-01", *company)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -115,12 +113,12 @@ func TestSetApplicationDate(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
-	company, err := a.NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	app, err := a.NewApplication("Test Application", a.FullTime, "2021-01-01", *company)
+	app, err := NewApplication("Test Application", FullTime, "2021-01-01", *company)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}

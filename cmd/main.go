@@ -3,10 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
 	"github.com/Tiburso/GoManager/pkg/application"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -295,8 +297,14 @@ func CLITool(db *gorm.DB) error {
 	}
 }
 
-func main() {
-	dsn := "host=localhost user=postgres password=postgres dbname=gomanager port=5432"
+func SetupDB() *gorm.DB {
+	host := GetEnvWithDefault("DB_HOST", "localhost")
+	user := GetEnvWithDefault("DB_USER", "postgres")
+	password := GetEnvWithDefault("DB_PASSWORD", "postgres")
+	dbname := GetEnvWithDefault("DB_NAME", "gomanager")
+	port := GetEnvWithDefault("DB_PORT", "5432")
+
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbname, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -310,7 +318,34 @@ func main() {
 		panic("failed to migrate database")
 	}
 
-	err = CLITool(db)
+	return db
+}
+
+func GetEnvWithDefault(key, defaultValue string) string {
+	value := os.Getenv(key)
+
+	if value == "" {
+		return defaultValue
+	}
+
+	return value
+}
+
+func LoadEnv() {
+	err := godotenv.Load()
+
+	if err != nil {
+		// write a warning to the log
+		log.Println("Error loading .env file")
+	}
+}
+
+func main() {
+	LoadEnv()
+
+	db := SetupDB()
+
+	err := CLITool(db)
 
 	if err != nil {
 		panic(err)

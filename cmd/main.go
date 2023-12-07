@@ -300,12 +300,9 @@ func CLITool(db *gorm.DB) error {
 func main() {
 	common.LoadEnv()
 
-	db := database.SetupDB()
+	// This sets up the database connection
+	database.ConnectDatabase()
+
+	// The server can only run when the database connection is established
 	handler.RunServer()
-
-	err := CLITool(db)
-	if err != nil {
-		panic(err)
-	}
-
 }

@@ -31,9 +31,7 @@ func NewServer() *ApiServer {
 	}
 
 	r := mux.NewRouter().StrictSlash(true)
-
-	// r.HandleFunc("/api/v1/applications", application.CreateApplication).Methods("POST")
-
+	SetupRoutes(r)
 	r.Use(mux.CORSMethodMiddleware(r))
 
 	srv.Handler = r
@@ -43,7 +41,11 @@ func NewServer() *ApiServer {
 }
 
 func SetupRoutes(r *mux.Router) {
-	r.HandleFunc("/api/v1/health", HealthCheckHandler).Methods("GET")
+	// define default prefix of /api/v1
+	api := r.PathPrefix("/api/v1").Subrouter()
+
+	// define health check endpoint
+	api.HandleFunc("/health", HealthCheckHandler).Methods("GET")
 }
 
 func (s *ApiServer) WaitForShutdown() {

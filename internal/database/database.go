@@ -9,7 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupDB() *gorm.DB {
+// TODO: check how I can make this not a global variable
+var db *gorm.DB
+var err error
+
+func ConnectDatabase() {
 	host := common.GetEnvWithDefault("DB_HOST", "localhost")
 	user := common.GetEnvWithDefault("DB_USER", "postgres")
 	password := common.GetEnvWithDefault("DB_PASSWORD", "postgres")
@@ -17,7 +21,7 @@ func SetupDB() *gorm.DB {
 	port := common.GetEnvWithDefault("DB_PORT", "5432")
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbname, port)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		panic("failed to connect database")
@@ -25,10 +29,7 @@ func SetupDB() *gorm.DB {
 
 	// Migrate the schema
 	err = db.AutoMigrate(&application.Company{}, &application.Application{})
-
 	if err != nil {
 		panic("failed to migrate database")
 	}
-
-	return db
 }

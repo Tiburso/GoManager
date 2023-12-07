@@ -1,181 +1,126 @@
 package controllers
 
-/*
-
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"strings"
+	"encoding/json"
+	"net/http"
 
 	"github.com/Tiburso/GoManager/internal/application"
-	"gorm.io/gorm"
+	"github.com/Tiburso/GoManager/internal/database"
 )
 
-func CreateApplication(db *gorm.DB) error {
+func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-	var name, applicationType, applicationDate, companyName string
+	// Initialize the application variable
+	app := &application.Application{}
 
-	// checking if application and company already exists
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("Enter application name: ")
-	name = ReadLine(scanner)
-	fmt.Print("Enter company name: ")
-	companyName = ReadLine(scanner)
-
-	res := db.Limit(1).Find(&application.Application{}, "name = ? AND company_name = ?", name, companyName)
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	if res.RowsAffected != 0 {
-		return fmt.Errorf("application already exists")
-	}
-
-	res = db.Limit(1).Find(&application.Company{}, "name = ?", companyName)
-
-	if res.Error != nil {
-		return nil
-	}
-
-	if res.RowsAffected == 0 {
-		err := CreateCompany(db, companyName)
-
-		if err != nil {
-			return err
-		}
-	}
-
-	var company application.Company
-	res = db.First(&company, "name = ?", companyName)
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	// Second Part creating the actual application
-	fmt.Print("Enter application type: ")
-	applicationType = ReadLine(scanner)
-	fmt.Print("Enter application date: ")
-	applicationDate = ReadLine(scanner)
-
-	application, err := application.NewApplication(name, applicationType, applicationDate, company)
-
-	if err != nil {
-		return err
-	}
-
-	res = db.Create(&application)
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	return nil
-}
-
-func DeleteApplication(db *gorm.DB) error {
-	var name, companyName string
-
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("Enter application name: ")
-	name = ReadLine(scanner)
-	fmt.Print("Enter company name: ")
-	companyName = ReadLine(scanner)
-
-	res := db.Where("name = ? AND company_name = ?", name, companyName).Delete(&application.Application{})
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	return nil
-}
-
-func UpdateApplication(db *gorm.DB) error {
-	var name, companyName, updateType string
-
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("Enter application name: ")
-	name = ReadLine(scanner)
-	fmt.Print("Enter company name: ")
-	companyName = ReadLine(scanner)
-
-	var app application.Application
-	res := db.Limit(1).Find(&app, "name = ? AND company_name = ?", name, companyName)
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	if res.RowsAffected == 0 {
-		return fmt.Errorf("application does not exist")
-	}
-
-	fmt.Println("1. Update type")
-	fmt.Println("2. Update date")
-	fmt.Println("3. Update status")
-	fmt.Print("Enter what you want to update: ")
-	updateType = ReadLine(scanner)
-
-	updateType = strings.TrimSpace(updateType)
-
-	switch updateType {
-	case "1":
-		fmt.Print("Enter new type: ")
-		newType := ReadLine(scanner)
-		err := app.SetType(newType)
-
-		if err != nil {
-			return err
-		}
-
-	case "2":
-		fmt.Print("Enter new date: ")
-		newDate := ReadLine(scanner)
-		err := app.SetApplicationDate(newDate)
-
-		if err != nil {
-			return err
-		}
-
-	case "3":
-		fmt.Print("Enter new status: ")
-		newStatus := ReadLine(scanner)
-		err := app.SetStatus(newStatus)
-
-		if err != nil {
-			return err
-		}
-
-	default:
-		return fmt.Errorf("invalid input")
-	}
-
-	res = db.Save(&app)
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	return nil
-}
-
-func ShowApplications(db *gorm.DB) {
-	var applications []application.Application
-	res := db.Model(&application.Application{}).Preload("Company").Find(&applications)
-
-	if res.Error != nil {
-		fmt.Println(res.Error)
+	// Decode JSON from the request body
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(app); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	for _, application := range applications {
-		fmt.Println(application)
+	// Validate the application creation
+	app, err := application.NewApplication(app.Name, app.Type, app.ApplicationDate.String(), app.Company)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
 	}
+
+	// Check if the application already exists
+	res := database.DB.Limit(1).Find(&application.Application{}, "name = ? AND company_name = ?", app.Name, app.CompanyName)
+
+	if res.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(res.Error.Error())
+		return
+	}
+
+	if res.RowsAffected > 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Application already exists")
+		return
+	}
+
+	// Create the application in the database
+	res = database.DB.Create(&app)
+	if res.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(res.Error.Error())
+		return
+	}
+
+	// Send a JSON response
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(app)
 }
-*/
+
+func DeleteApplicationHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Initialize the application variable
+	app := &application.Application{}
+
+	// Decode JSON from the request body
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(app); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	// Delete the application from the database
+	res := database.DB.Where("name = ? AND company_name = ?", app.Name, app.CompanyName).Delete(&application.Application{})
+
+	if res.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(res.Error.Error())
+		return
+	}
+
+	// Send a JSON response
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(app)
+}
+
+func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Initialize the application variable
+	app := &application.Application{}
+
+	// Decode JSON from the request body
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(app); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	// Update the application in the database
+	res := database.DB.Where("name = ? AND company_name = ?", app.Name, app.CompanyName).Save(&app)
+
+	if res.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(res.Error.Error())
+		return
+	}
+
+	// Send a JSON response
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(app)
+}
+
+func GetApplicationsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var applications []application.Application
+	database.DB.Preload("Company").Find(&applications)
+
+	// Send a JSON response
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(applications)
+}

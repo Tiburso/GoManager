@@ -77,7 +77,7 @@ func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get the company from the database
 	var company application.Company
-	res := database.DB.Preload("Applications").First(&company, "name = ?", name)
+	res := database.DB.Model(&application.Company{}).Preload("Applications").First(&company, "name = ?", name)
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(res.Error.Error())

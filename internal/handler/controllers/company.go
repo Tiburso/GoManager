@@ -30,8 +30,23 @@ func CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if the company already exists
+	res := database.DB.Limit(1).Find(&application.Company{}, "name = ?", company.Name)
+
+	if res.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(res.Error.Error())
+		return
+	}
+
+	if res.RowsAffected > 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Company already exists")
+		return
+	}
+
 	// Create the company in the database
-	res := database.DB.Create(&company)
+	res = database.DB.Create(&company)
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(res.Error.Error())

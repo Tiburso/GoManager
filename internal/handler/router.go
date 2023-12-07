@@ -47,6 +47,9 @@ func SetupRoutes(r *mux.Router) {
 
 	// define health check endpoint
 	api.HandleFunc("/health", controllers.HealthCheckHandler).Methods("GET")
+
+	// company endpoints
+	api.HandleFunc("/company", controllers.CreateCompanyHandler).Methods("POST")
 }
 
 func (s *ApiServer) WaitForShutdown() {

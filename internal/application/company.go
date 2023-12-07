@@ -8,7 +8,7 @@ import (
 type Company struct {
 	Name            string        `json:"name" gorm:"primaryKey"`
 	CandidatePortal string        `json:"candidate_portal"`
-	Applications    []Application `gorm:"foreignKey:CompanyName;references:Name"`
+	Applications    []Application `gorm:"foreignKey:CompanyName;references:Name" json:"applications,omitempty"`
 }
 
 func isValidURL(url string) bool {

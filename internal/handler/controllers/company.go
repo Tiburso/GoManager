@@ -11,25 +11,65 @@ import (
 func CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var company *application.Company
-	var err error
-	// get the body of our POST request
-	json.NewDecoder(r.Body).Decode(company)
+	// Initialize the company variable
+	company := &application.Company{}
+
+	// Decode JSON from the request body
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(company); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
 
 	// Validate the company creation
-	company, err = application.NewCompany(company.Name, company.CandidatePortal)
-
+	company, err := application.NewCompany(company.Name, company.CandidatePortal)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
+	// Create the company in the database
 	res := database.DB.Create(&company)
-
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(res.Error.Error())
 		return
 	}
+
+	// Send a JSON response
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(company)
+}
+
+func GetCompaniesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var companies []application.Company
+	database.DB.Find(&companies)
+
+	// Send a JSON response
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(companies)
+}
+
+func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Get the company name from the URL
+	name := r.URL.Query().Get("name")
+
+	// Get the company from the database
+	var company application.Company
+	res := database.DB.Preload("Applications").First(&company, "name = ?", name)
+	if res.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(res.Error.Error())
+		return
+	}
+
+	// Send a JSON response
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(company)
 }

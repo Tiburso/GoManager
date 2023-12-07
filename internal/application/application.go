@@ -24,7 +24,7 @@ type Application struct {
 	Type            string    `json:"type"`
 	Status          string    `json:"status"`
 	ApplicationDate time.Time `json:"application_date"`
-	Company         Company   `gorm:"foreignKey:CompanyName;references:Name"`
+	Company         Company   `gorm:"foreignKey:CompanyName;references:Name" json:"company,omitempty"`
 }
 
 func NewApplication(name, applicationType, applicationDate string, company Company) (*Application, error) {

@@ -50,8 +50,8 @@ func SetupRoutes(r *mux.Router) {
 
 	// company endpoints
 	api.HandleFunc("/company", controllers.CreateCompanyHandler).Methods("POST")
-	api.HandleFunc("/company", controllers.GetCompaniesHandler).Methods("GET")
-	api.HandleFunc("/company/{name}", controllers.GetCompanyWithApplicationsHandler).Methods("GET")
+	api.HandleFunc("/company", controllers.GetCompanyWithApplicationsHandler).Methods("GET")
+	api.HandleFunc("/companies", controllers.GetCompaniesHandler).Methods("GET")
 }
 
 func (s *ApiServer) WaitForShutdown() {

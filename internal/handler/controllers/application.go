@@ -111,7 +111,7 @@ func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Update the application in the database
 	var app application.Application
-	res := database.DB.First("name = ? AND company_name = ?", name, company_name)
+	res := database.DB.First(&app, "name = ? AND company_name = ?", name, company_name)
 
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)

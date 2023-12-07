@@ -21,9 +21,9 @@ const (
 type Application struct {
 	Name            string    `json:"name" gorm:"primaryKey"`
 	CompanyName     string    `json:"company_name" gorm:"primaryKey"`
-	Type            string    `json:"type"`
-	Status          string    `json:"status"`
-	ApplicationDate time.Time `json:"application_date"`
+	Type            string    `json:"type,omitempty"`
+	Status          string    `json:"status,omitempty"`
+	ApplicationDate time.Time `json:"application_date,omitempty"`
 	Company         Company   `gorm:"foreignKey:CompanyName;references:Name" json:"company,omitempty"`
 }
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Tiburso/GoManager/internal/application"
 	"github.com/Tiburso/GoManager/internal/database"
+	"github.com/gorilla/mux"
 )
 
 func CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +74,7 @@ func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Get the company name from the URL
-	name := r.URL.Query().Get("name")
+	name := mux.Vars(r)["name"]
 
 	// Get the company from the database
 	var company application.Company

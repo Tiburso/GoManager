@@ -23,7 +23,7 @@ type Application struct {
 	CompanyName     string    `json:"company_name" gorm:"primaryKey"`
 	Type            string    `json:"type,omitempty"`
 	Status          string    `json:"status,omitempty"`
-	ApplicationDate time.Time `json:"application_date,omitempty"`
+	ApplicationDate time.Time `json:"application_date,string,omitempty"`
 	Company         Company   `gorm:"foreignKey:CompanyName;references:Name" json:"company,omitempty"`
 }
 

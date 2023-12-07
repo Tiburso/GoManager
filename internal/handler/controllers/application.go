@@ -12,26 +12,30 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Initialize the application variable
-	app := &application.Application{}
+	updateMap := make(map[string]string)
 
 	// Decode JSON from the request body
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(app); err != nil {
+	if err := decoder.Decode(&updateMap); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	// Validate the application creation
-	app, err := application.NewApplication(app.Name, app.Type, app.ApplicationDate.String(), app.Company)
-	if err != nil {
+	// Check if the required fields are present
+	name, name_ok := updateMap["name"]
+	company_name, company_name_ok := updateMap["company_name"]
+	application_date, application_date_ok := updateMap["application_date"]
+	application_type, application_type_ok := updateMap["type"]
+
+	if !name_ok || !company_name_ok || !application_date_ok || !application_type_ok {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(err.Error())
+		json.NewEncoder(w).Encode("Missing name, company_name, application_date or application_type")
 		return
 	}
 
 	// Check if the application already exists
-	res := database.DB.Limit(1).Find(&application.Application{}, "name = ? AND company_name = ?", app.Name, app.CompanyName)
+	res := database.DB.Limit(1).Find(&application.Application{}, "name = ? AND company_name = ?", name, company_name)
 
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -42,6 +46,24 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	if res.RowsAffected > 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode("Application already exists")
+		return
+	}
+
+	// fetch the company from the database
+	var company application.Company
+	res = database.DB.First(&company, "name = ?", company_name)
+
+	if res.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(res.Error.Error())
+		return
+	}
+
+	// Validate the application creation
+	app, err := application.NewApplication(name, application_type, application_date, company)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 

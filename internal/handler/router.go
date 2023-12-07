@@ -42,6 +42,10 @@ func NewServer() *ApiServer {
 	return srv
 }
 
+func SetupRoutes(r *mux.Router) {
+	r.HandleFunc("/api/v1/health", HealthCheckHandler).Methods("GET")
+}
+
 func (s *ApiServer) WaitForShutdown() {
 	irq := make(chan os.Signal, 1)
 	signal.Notify(irq, os.Interrupt)

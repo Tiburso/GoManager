@@ -10,7 +10,7 @@ import (
 )
 
 // TODO: check how I can make this not a global variable
-var db *gorm.DB
+var DB *gorm.DB
 var err error
 
 func ConnectDatabase() {
@@ -21,14 +21,14 @@ func ConnectDatabase() {
 	port := common.GetEnvWithDefault("DB_PORT", "5432")
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbname, port)
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		panic("failed to connect database")
 	}
 
 	// Migrate the schema
-	err = db.AutoMigrate(&application.Company{}, &application.Application{})
+	err = DB.AutoMigrate(&application.Company{}, &application.Application{})
 	if err != nil {
 		panic("failed to migrate database")
 	}

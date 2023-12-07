@@ -6,8 +6,8 @@ import (
 )
 
 type Company struct {
-	Name            string `gorm:"primaryKey"`
-	CandidatePortal string
+	Name            string        `json:"name" gorm:"primaryKey"`
+	CandidatePortal string        `json:"candidate_portal"`
 	Applications    []Application `gorm:"foreignKey:CompanyName;references:Name"`
 }
 

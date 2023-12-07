@@ -21,27 +21,6 @@ func ReadLine(scanner *bufio.Scanner) string {
 	return ""
 }
 
-func CreateCompany(db *gorm.DB, name string) error {
-	var candidatePortal string
-
-	fmt.Print("Enter company candidate portal: ")
-	candidatePortal = ReadLine(bufio.NewScanner(os.Stdin))
-
-	company, err := application.NewCompany(name, candidatePortal)
-
-	if err != nil {
-		return err
-	}
-
-	res := db.Create(&company)
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	return nil
-}
-
 func CreateApplication(db *gorm.DB) error {
 
 	var name, applicationType, applicationDate, companyName string

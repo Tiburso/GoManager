@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Tiburso/GoManager/common"
+	"github.com/Tiburso/GoManager/internal/handler/controllers"
 	"github.com/gorilla/mux"
 )
 
@@ -45,7 +46,7 @@ func SetupRoutes(r *mux.Router) {
 	api := r.PathPrefix("/api/v1").Subrouter()
 
 	// define health check endpoint
-	api.HandleFunc("/health", HealthCheckHandler).Methods("GET")
+	api.HandleFunc("/health", controllers.HealthCheckHandler).Methods("GET")
 }
 
 func (s *ApiServer) WaitForShutdown() {

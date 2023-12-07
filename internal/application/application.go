@@ -19,12 +19,12 @@ const (
 )
 
 type Application struct {
-	Name            string `gorm:"primaryKey"`
-	CompanyName     string `gorm:"primaryKey"`
-	Type            string
-	Status          string
-	ApplicationDate time.Time
-	Company         Company `gorm:"foreignKey:CompanyName;references:Name"`
+	Name            string    `json:"name" gorm:"primaryKey"`
+	CompanyName     string    `json:"company_name" gorm:"primaryKey"`
+	Type            string    `json:"type"`
+	Status          string    `json:"status"`
+	ApplicationDate time.Time `json:"application_date"`
+	Company         Company   `gorm:"foreignKey:CompanyName;references:Name"`
 }
 
 func NewApplication(name, applicationType, applicationDate string, company Company) (*Application, error) {

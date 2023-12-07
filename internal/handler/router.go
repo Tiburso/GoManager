@@ -51,11 +51,12 @@ func (s *ApiServer) WaitForShutdown() {
 	signal.Notify(irq, os.Interrupt)
 
 	select {
-	case <-irq:
+	case sig := <-irq:
 		// Received SIGINT (Ctrl + C). Shut down gracefully...
-		s.shutdown <- true
-	case <-s.shutdown:
+		log.Println("Received SIGINT (Ctrl + C). Shutting down gracefully...", sig)
+	case sig := <-s.shutdown:
 		// Received another shutdown request. Already shutting down...
+		log.Println("Received another shutdown request. Already shutting down...", sig)
 	}
 
 	log.Println("Shutting down...")
@@ -74,14 +75,17 @@ func (s *ApiServer) WaitForShutdown() {
 func (s *ApiServer) Start() {
 	log.Println("Starting server on port", s.Addr)
 
+	done := make(chan bool)
 	go func() {
 		err := s.ListenAndServe()
 		if err != nil {
 			log.Println("Error:", err)
 		}
+		done <- true
 	}()
 
 	s.WaitForShutdown()
+	<-done
 }
 
 func RunServer() {

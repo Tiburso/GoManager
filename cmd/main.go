@@ -301,11 +301,11 @@ func main() {
 	common.LoadEnv()
 
 	db := database.SetupDB()
-	err := CLITool(db)
+	handler.RunServer()
 
+	err := CLITool(db)
 	if err != nil {
 		panic(err)
 	}
 
-	handler.RunServer()
 }

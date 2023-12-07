@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"net/http"
 	"os"
 	"strings"
 
@@ -308,7 +307,5 @@ func main() {
 		panic(err)
 	}
 
-	r := handler.SetupRouter()
-
-	http.Handle("/", r)
+	handler.RunServer()
 }

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/Tiburso/GoManager/common"
-	"github.com/Tiburso/GoManager/handler"
 	"github.com/Tiburso/GoManager/models/db"
+	"github.com/Tiburso/GoManager/routers"
 )
 
 func ReadLine(scanner *bufio.Scanner) string {
@@ -73,5 +73,5 @@ func main() {
 	db.ConnectDatabase()
 
 	// The server can only run when the db connection is established
-	handler.RunServer()
+	routers.RunServer()
 }

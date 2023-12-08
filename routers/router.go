@@ -1,4 +1,4 @@
-package handler
+package routers
 
 import (
 	"context"
@@ -9,14 +9,14 @@ import (
 	"time"
 
 	"github.com/Tiburso/GoManager/common"
-	"github.com/Tiburso/GoManager/handler/api"
+	"github.com/Tiburso/GoManager/routers/api"
 	"github.com/gorilla/mux"
 )
 
 type ApiServer struct {
 	http.Server
 	shutdown chan bool
-	reqCount uint32
+	// reqCount uint32
 }
 
 func NewServer() *ApiServer {

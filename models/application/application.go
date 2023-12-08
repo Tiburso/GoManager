@@ -26,11 +26,12 @@ const (
 
 type Application struct {
 	Name            string `gorm:"primaryKey"`
-	CompanyName     string `gorm:"primaryKey"`
 	Type            Type
 	Status          Status
 	ApplicationDate time.Time
-	Company         *company.Company
+
+	CompanyName string `gorm:"primaryKey"`
+	Company     *company.Company
 }
 
 func NewApplication(db *gorm.DB, app *Application) error {

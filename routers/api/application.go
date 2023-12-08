@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Tiburso/GoManager/models/application"
-	"github.com/Tiburso/GoManager/models/company"
-	"github.com/Tiburso/GoManager/models/db"
+	"github.com/Tiburso/GoManager/routers/structs"
+	"github.com/Tiburso/GoManager/services/application"
 )
 
 func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,50 +34,19 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the application already exists
-	res := db.DB.Limit(1).Find(&application.Application{}, "name = ? AND company_name = ?", name, company_name)
+	// call the service
+	err := application.CreateApplication(name, application_type, application_date, company_name)
 
-	if res.Error != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(res.Error.Error())
-		return
-	}
-
-	if res.RowsAffected > 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Application already exists")
-		return
-	}
-
-	// fetch the company from the db
-	var company company.Company
-	res = db.DB.First(&company, "name = ?", company_name)
-
-	if res.Error != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(res.Error.Error())
-		return
-	}
-
-	// Validate the application creation
-	app, err := application.NewApplication(name, application_type, application_date, company)
+	// TODO: need to check now if the error is duplicate app or missing company
+	// for now just return the error
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	// Create the application in the db
-	res = db.DB.Create(&app)
-	if res.Error != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(res.Error.Error())
-		return
-	}
-
 	// Send a JSON response
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(app)
+	w.WriteHeader(http.StatusOK)
 }
 
 func DeleteApplicationHandler(w http.ResponseWriter, r *http.Request) {
@@ -97,103 +65,64 @@ func DeleteApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete the application from the db
-	res := db.DB.Where("name = ? AND company_name = ?", name, company_name).Delete(&application.Application{})
+	err := application.DeleteApplication(name[0], company_name[0])
 
-	if res.Error != nil {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(res.Error.Error())
+		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	// Send a JSON response
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Initialize the application variable
-	update_map := make(map[string]any)
-
 	// Decode JSON from the request body
+	var application_struct structs.Application
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&update_map); err != nil {
+	if err := decoder.Decode(&application_struct); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	name, name_ok := update_map["name"]
-	company_name, company_name_ok := update_map["company_name"]
-
-	if !name_ok || !company_name_ok {
+	if application_struct.Name == "" || application_struct.CompanyName == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode("Missing name or company_name")
 		return
 	}
 
-	// Update the application in the db
-	var app application.Application
-	res := db.DB.First(&app, "name = ? AND company_name = ?", name, company_name)
+	// call the service
+	err := application.UpdateApplication(
+		application_struct.Name,
+		application_struct.Type,
+		application_struct.ApplicationDate,
+		application_struct.Status,
+		application_struct.CompanyName,
+	)
 
-	if res.Error != nil {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(res.Error.Error())
-		return
-	}
-
-	// Now we have the application, we can update it
-	status, status_ok := update_map["status"]
-
-	if status_ok {
-		err := app.SetStatus(status.(string))
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode("Invalid status")
-			return
-		}
-	}
-
-	application_date, application_date_ok := update_map["application_date"]
-
-	if application_date_ok {
-		err := app.SetApplicationDate(application_date.(string))
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode("Invalid application date")
-			return
-		}
-	}
-
-	application_type, application_type_ok := update_map["application_type"]
-
-	if application_type_ok {
-		err := app.SetType(application_type.(string))
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode("Invalid application type")
-			return
-		}
-	}
-
-	res = db.DB.Save(&app)
-
-	if res.Error != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(res.Error.Error())
+		json.NewEncoder(w).Encode(err)
 		return
 	}
 
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(app)
 }
 
 func GetApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var applications []application.Application
-	db.DB.Preload("Company").Find(&applications)
+	applications, err := application.GetApplications()
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
 
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)

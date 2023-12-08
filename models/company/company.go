@@ -1,8 +1,7 @@
 package company
 
 import (
-	"fmt"
-	"regexp"
+	"gorm.io/gorm"
 )
 
 type Company struct {
@@ -10,35 +9,79 @@ type Company struct {
 	CandidatePortal string
 }
 
-func isValidURL(url string) bool {
-	// Regular expression for a basic URL validation
-	// Note: This is a simple example and might not cover all edge cases.
-	urlPattern := `^(http|https)://[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=]+$`
-
-	match, err := regexp.MatchString(urlPattern, url)
-	if err != nil {
-		// Handle error if the regular expression compilation fails
-		fmt.Println("Error:", err)
-		return false
-	}
-
-	return match
-}
-
 // COMPANY
 
-func NewCompany(name, candidatePortal string) (*Company, error) {
-	// Candidate portal must be a valid URL
-	if !isValidURL(candidatePortal) {
-		return nil, fmt.Errorf("'%s' is not a valid URL", candidatePortal)
+func NewCompany(db *gorm.DB, c *Company) (*Company, error) {
+	// Check if company already exists
+	res := db.Limit(1).Where("name = ?", "Test Company").Find(&Company{})
+	if res.Error != nil {
+		return nil, res.Error
 	}
 
-	return &Company{
-		Name:            name,
-		CandidatePortal: candidatePortal,
-	}, nil
+	if res.RowsAffected > 0 {
+		return nil, nil
+	}
+
+	// Create company
+	res = db.Create(&c)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return c, nil
 }
 
-func (c Company) String() string {
-	return c.Name + ", " + c.CandidatePortal
+func DeleteCompany(db *gorm.DB, name string) error {
+	res := db.Where("name = ?", name).Delete(&Company{})
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil
+	}
+
+	return nil
+}
+
+func UpdateCompany(db *gorm.DB, c *Company) (*Company, error) {
+	res := db.Where("name = ?", c.Name).Updates(&c)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, nil
+	}
+
+	return c, nil
+}
+
+func GetCompany(db *gorm.DB, name string) (*Company, error) {
+	var c Company
+	res := db.Where("name = ?", name).Find(&c)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, nil
+	}
+
+	return &c, nil
+}
+
+func GetCompanies(db *gorm.DB) ([]Company, error) {
+	var companies []Company
+	res := db.Find(&companies)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return companies, nil
 }

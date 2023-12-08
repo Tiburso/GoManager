@@ -5,83 +5,108 @@ import (
 	"time"
 
 	"github.com/Tiburso/GoManager/models/company"
+	"gorm.io/gorm"
 )
 
-// Types of applications
+type Type string
+
 const (
-	FullTime   = "Full Time"
-	PartTime   = "Part Time"
-	Internship = "Internship"
+	FullTime   Type = "full_time"
+	PartTime   Type = "part_time"
+	Internship Type = "internship"
+)
+
+type Status string
+
+const (
+	Applied  Status = "applied"
+	Rejected Status = "rejected"
+	Accepted Status = "accepted"
 )
 
 type Application struct {
 	Name            string `gorm:"primaryKey"`
 	CompanyName     string `gorm:"primaryKey"`
-	Type            string
+	Type            Type
 	Status          Status
 	ApplicationDate time.Time
-	Company         company.Company
+	Company         *company.Company
 }
 
-func NewApplication(name, applicationType, applicationDate string, company company.Company) (*Application, error) {
-	if applicationType != FullTime && applicationType != PartTime && applicationType != Internship {
-		return nil, fmt.Errorf("'%s' is not a valid application type", applicationType)
+func NewApplication(db *gorm.DB, app *Application) error {
+	// check if application already exists
+	res := db.Limit(1).Where("name = ? AND company_name = ?", app.Name, app.CompanyName).Find(&Application{})
+
+	if res.Error != nil {
+		return res.Error
 	}
 
-	// Application date must be a valid date
-	date, err := time.Parse("2006-01-02", applicationDate)
-	if err != nil {
-		return nil, fmt.Errorf("'%s' is not a valid date", applicationDate)
+	if res.RowsAffected > 0 {
+		return fmt.Errorf("application already exists")
 	}
 
-	return &Application{
-		Name:            name,
-		Type:            applicationType,
-		ApplicationDate: date,
-		Status:          Applied,
-		Company:         company,
-	}, nil
-}
+	// create application
+	res = db.Create(&app)
 
-func (a *Application) SetStatus(status Status) error {
-	if status != Applied && status != Rejected && status != Accepted {
-		return fmt.Errorf("'%s' is not a valid application status", status)
+	if res.Error != nil {
+		return res.Error
 	}
-
-	a.Status = status
 
 	return nil
 }
 
-func (a *Application) SetType(applicationType string) error {
-	if applicationType != FullTime && applicationType != PartTime && applicationType != Internship {
-		return fmt.Errorf("'%s' is not a valid application type", applicationType)
+func DeleteApplication(db *gorm.DB, name string, companyName string) error {
+	res := db.Where("name = ? AND company_name = ?", name, companyName).Delete(&Application{})
+
+	if res.Error != nil {
+		return res.Error
 	}
 
-	a.Type = applicationType
+	if res.RowsAffected == 0 {
+		return fmt.Errorf("application does not exist")
+	}
 
 	return nil
 }
 
-func (a *Application) SetApplicationDate(applicationDate string) error {
-	date, err := time.Parse("2006-01-02", applicationDate)
-	if err != nil {
-		return fmt.Errorf("'%s' is not a valid date", applicationDate)
+func UpdateApplication(db *gorm.DB, a *Application) error {
+	res := db.Where("name = ? AND company_name = ?", a.Name, a.CompanyName).Updates(&a)
+
+	if res.Error != nil {
+		return res.Error
 	}
 
-	a.ApplicationDate = date
+	if res.RowsAffected == 0 {
+		return fmt.Errorf("application does not exist")
+	}
 
 	return nil
 }
 
-func (a Application) String() string {
-	company_string := ""
+func GetApplication(db *gorm.DB, name string, companyName string) (*Application, error) {
+	var app Application
 
-	//if company exists
-	if a.Company.Name != "" {
-		company_string = ", " + a.Company.CandidatePortal
+	res := db.Where("name = ? AND company_name = ?", name, companyName).Find(&app)
+
+	if res.Error != nil {
+		return nil, res.Error
 	}
 
-	// for the time i only want the format of yyyy-mm-dd
-	return a.Name + ", " + a.Type + ", " + a.Status + ", " + a.ApplicationDate.Format("2006-01-02") + company_string
+	if res.RowsAffected == 0 {
+		return nil, fmt.Errorf("application does not exist")
+	}
+
+	return &app, nil
+}
+
+func GetApplications(db *gorm.DB) ([]*Application, error) {
+	var apps []*Application
+
+	res := db.Find(&apps)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return apps, nil
 }

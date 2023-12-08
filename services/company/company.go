@@ -3,6 +3,10 @@ package company
 import (
 	"fmt"
 	"regexp"
+
+	company_model "github.com/Tiburso/GoManager/models/company"
+	"github.com/Tiburso/GoManager/models/db"
+	"github.com/Tiburso/GoManager/routers/structs"
 )
 
 func isValidURL(url string) bool {
@@ -18,4 +22,102 @@ func isValidURL(url string) bool {
 	}
 
 	return match
+}
+
+func CreateCompany(name, candidatePortal string) error {
+	db := db.DB
+
+	if name == "" {
+		return fmt.Errorf("missing name")
+	}
+
+	if candidatePortal == "" || !isValidURL(candidatePortal) {
+		return fmt.Errorf("missing or invalid candidate portal URL")
+	}
+
+	company := &company_model.Company{
+		Name:            name,
+		CandidatePortal: candidatePortal,
+	}
+
+	err := company_model.NewCompany(db, company)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteCompany(name string) error {
+	db := db.DB
+
+	err := company_model.DeleteCompany(db, name)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateCompany(name, candidatePortal string) error {
+	db := db.DB
+
+	company, err := company_model.GetCompany(db, name)
+
+	if err != nil {
+		return err
+	}
+
+	if candidatePortal != "" {
+		if !isValidURL(candidatePortal) {
+			return fmt.Errorf("invalid candidate portal URL")
+		}
+
+		company.CandidatePortal = candidatePortal
+	}
+
+	_, err = company_model.UpdateCompany(db, company)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetCompany(name string) (*structs.Company, error) {
+	db := db.DB
+
+	company, err := company_model.GetCompany(db, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &structs.Company{
+		Name:            company.Name,
+		CandidatePortal: company.CandidatePortal,
+	}, nil
+}
+
+func GetCompanies() ([]*structs.Company, error) {
+	db := db.DB
+
+	companies, err := company_model.GetCompanies(db)
+
+	if err != nil {
+		return nil, err
+	}
+
+	companiesStruct := make([]*structs.Company, len(companies))
+	for i, company := range companies {
+		companiesStruct[i] = &structs.Company{
+			Name:            company.Name,
+			CandidatePortal: company.CandidatePortal,
+		}
+	}
+
+	return companiesStruct, nil
 }

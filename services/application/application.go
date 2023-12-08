@@ -7,6 +7,7 @@ import (
 	application_model "github.com/Tiburso/GoManager/models/application"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
+	"github.com/Tiburso/GoManager/routers/structs"
 )
 
 func CreateApplication(name string, applicationType string, applicationDate string, companyName string) error {
@@ -87,7 +88,7 @@ func UpdateApplication(name, applicationType, applicationDate, applicationStatus
 	return nil
 }
 
-func GetApplication(name string, companyName string) (*application_model.Application, error) {
+func GetApplication(name string, companyName string) (*structs.Application, error) {
 	db := db.DB
 
 	app, err := application_model.GetApplication(db, name, companyName)
@@ -96,10 +97,16 @@ func GetApplication(name string, companyName string) (*application_model.Applica
 		return nil, err
 	}
 
-	return app, nil
+	return &structs.Application{
+		Name:            app.Name,
+		Type:            string(app.Type),
+		ApplicationDate: app.ApplicationDate.Format("2006-01-02"),
+		Status:          string(app.Status),
+		CompanyName:     app.Company.Name,
+	}, nil
 }
 
-func GetApplications() ([]*application_model.Application, error) {
+func GetApplications() ([]*structs.Application, error) {
 	db := db.DB
 
 	apps, err := application_model.GetApplications(db)
@@ -108,5 +115,16 @@ func GetApplications() ([]*application_model.Application, error) {
 		return nil, err
 	}
 
-	return apps, nil
+	app_structs := make([]*structs.Application, len(apps))
+	for i, app := range apps {
+		app_structs[i] = &structs.Application{
+			Name:            app.Name,
+			Type:            string(app.Type),
+			ApplicationDate: app.ApplicationDate.Format("2006-01-02"),
+			Status:          string(app.Status),
+			CompanyName:     app.Company.Name,
+		}
+	}
+
+	return app_structs, nil
 }

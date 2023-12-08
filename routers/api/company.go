@@ -62,7 +62,7 @@ func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 
 	// Get the company from the db
-	company, err := company_service.GetCompany(name)
+	company, err := company_service.GetCompanyWithApplications(name)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

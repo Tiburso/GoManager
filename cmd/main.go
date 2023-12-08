@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/Tiburso/GoManager/common"
-	"github.com/Tiburso/GoManager/internal/database"
-	"github.com/Tiburso/GoManager/internal/handler"
+	"github.com/Tiburso/GoManager/handler"
+	"github.com/Tiburso/GoManager/models/db"
 )
 
 func ReadLine(scanner *bufio.Scanner) string {
@@ -69,9 +69,9 @@ func ShowMenu() {
 func main() {
 	common.LoadEnv()
 
-	// This sets up the database connection
-	database.ConnectDatabase()
+	// This sets up the db connection
+	db.ConnectDatabase()
 
-	// The server can only run when the database connection is established
+	// The server can only run when the db connection is established
 	handler.RunServer()
 }

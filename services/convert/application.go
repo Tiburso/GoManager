@@ -31,3 +31,13 @@ func ToApplication(a *application.Application) *structs.Application {
 		Company:             ToCompany(a.Company),
 	}
 }
+
+func ToApplications(a []*application.Application) []*structs.Application {
+	res := make([]*structs.Application, len(a))
+
+	for i, app := range a {
+		res[i] = ToApplication(app)
+	}
+
+	return res
+}

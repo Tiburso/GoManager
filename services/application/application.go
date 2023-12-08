@@ -101,7 +101,7 @@ func GetApplication(name string, companyName string) (*structs.Application, erro
 	return convert.ToApplication(app), nil
 }
 
-func GetApplications() ([]*structs.ApplicationCreation, error) {
+func GetApplications() ([]*structs.Application, error) {
 	db := db.DB
 
 	apps, err := application_model.GetApplications(db)
@@ -110,5 +110,5 @@ func GetApplications() ([]*structs.ApplicationCreation, error) {
 		return nil, err
 	}
 
-	return convert.ToApplicationCreations(apps), nil
+	return convert.ToApplications(apps), nil
 }

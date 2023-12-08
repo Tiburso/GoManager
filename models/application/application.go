@@ -103,7 +103,7 @@ func GetApplication(db *gorm.DB, name string, companyName string) (*Application,
 func GetApplications(db *gorm.DB) ([]*Application, error) {
 	var apps []*Application
 
-	res := db.Find(&apps)
+	res := db.Model(&Application{}).Preload("Company").Find(&apps)
 
 	if res.Error != nil {
 		return nil, res.Error

@@ -80,7 +80,7 @@ func GetCompany(db *gorm.DB, name string) (*Company, error) {
 
 func GetCompanies(db *gorm.DB) ([]*Company, error) {
 	var companies []*Company
-	res := db.Preload("applications").Find(&companies)
+	res := db.Find(&companies)
 
 	if res.Error != nil {
 		return nil, res.Error

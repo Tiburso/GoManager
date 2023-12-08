@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"regexp"
 
+	applications_model "github.com/Tiburso/GoManager/models/application"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
 	"github.com/Tiburso/GoManager/routers/structs"
+	"github.com/Tiburso/GoManager/services/convert"
 )
 
 func isValidURL(url string) bool {
@@ -87,7 +89,7 @@ func UpdateCompany(name, candidatePortal string) error {
 	return nil
 }
 
-func GetCompany(name string) (*structs.Company, error) {
+func GetCompanyWithApplications(name string) (*structs.CompanyWithApplications, error) {
 	db := db.DB
 
 	company, err := company_model.GetCompany(db, name)
@@ -96,10 +98,13 @@ func GetCompany(name string) (*structs.Company, error) {
 		return nil, err
 	}
 
-	return &structs.Company{
-		Name:            company.Name,
-		CandidatePortal: company.CandidatePortal,
-	}, nil
+	applications, err := applications_model.GetCompanyApplications(db, company.Name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.ToCompanyWithApplications(company, applications), nil
 }
 
 func GetCompanies() ([]*structs.Company, error) {
@@ -111,13 +116,5 @@ func GetCompanies() ([]*structs.Company, error) {
 		return nil, err
 	}
 
-	companiesStruct := make([]*structs.Company, len(companies))
-	for i, company := range companies {
-		companiesStruct[i] = &structs.Company{
-			Name:            company.Name,
-			CandidatePortal: company.CandidatePortal,
-		}
-	}
-
-	return companiesStruct, nil
+	return convert.ToCompanies(companies), nil
 }

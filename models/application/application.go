@@ -111,3 +111,15 @@ func GetApplications(db *gorm.DB) ([]*Application, error) {
 
 	return apps, nil
 }
+
+func GetCompanyApplications(db *gorm.DB, companyName string) ([]*Application, error) {
+	var apps []*Application
+
+	res := db.Find(&apps, "company_name = ?", companyName)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return apps, nil
+}

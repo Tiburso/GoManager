@@ -8,6 +8,7 @@ import (
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
 	"github.com/Tiburso/GoManager/routers/structs"
+	"github.com/Tiburso/GoManager/services/convert"
 )
 
 func CreateApplication(name string, applicationType string, applicationDate string, companyName string) error {
@@ -97,16 +98,10 @@ func GetApplication(name string, companyName string) (*structs.Application, erro
 		return nil, err
 	}
 
-	return &structs.Application{
-		Name:            app.Name,
-		Type:            string(app.Type),
-		ApplicationDate: app.ApplicationDate.Format("2006-01-02"),
-		Status:          string(app.Status),
-		CompanyName:     app.Company.Name,
-	}, nil
+	return convert.ToApplication(app), nil
 }
 
-func GetApplications() ([]*structs.Application, error) {
+func GetApplications() ([]*structs.ApplicationCreation, error) {
 	db := db.DB
 
 	apps, err := application_model.GetApplications(db)
@@ -115,16 +110,5 @@ func GetApplications() ([]*structs.Application, error) {
 		return nil, err
 	}
 
-	app_structs := make([]*structs.Application, len(apps))
-	for i, app := range apps {
-		app_structs[i] = &structs.Application{
-			Name:            app.Name,
-			Type:            string(app.Type),
-			ApplicationDate: app.ApplicationDate.Format("2006-01-02"),
-			Status:          string(app.Status),
-			CompanyName:     app.Company.Name,
-		}
-	}
-
-	return app_structs, nil
+	return convert.ToApplicationCreations(apps), nil
 }

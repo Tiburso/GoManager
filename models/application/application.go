@@ -14,19 +14,13 @@ const (
 	Internship = "Internship"
 )
 
-const (
-	Applied  = "Applied"
-	Rejected = "Rejected"
-	Accepted = "Accepted"
-)
-
 type Application struct {
-	Name            string          `json:"name" gorm:"primaryKey"`
-	CompanyName     string          `json:"company_name" gorm:"primaryKey"`
-	Type            string          `json:"type,omitempty"`
-	Status          string          `json:"status,omitempty"`
-	ApplicationDate time.Time       `json:"application_date,omitempty"`
-	Company         company.Company `gorm:"foreignKey:CompanyName;references:Name" json:"company,omitempty"`
+	Name            string `gorm:"primaryKey"`
+	CompanyName     string `gorm:"primaryKey"`
+	Type            string
+	Status          Status
+	ApplicationDate time.Time
+	Company         company.Company
 }
 
 func NewApplication(name, applicationType, applicationDate string, company company.Company) (*Application, error) {
@@ -49,7 +43,7 @@ func NewApplication(name, applicationType, applicationDate string, company compa
 	}, nil
 }
 
-func (a *Application) SetStatus(status string) error {
+func (a *Application) SetStatus(status Status) error {
 	if status != Applied && status != Rejected && status != Accepted {
 		return fmt.Errorf("'%s' is not a valid application status", status)
 	}

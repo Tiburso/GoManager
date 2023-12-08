@@ -1,11 +1,12 @@
-package controllers
+package api
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Tiburso/GoManager/internal/application"
-	"github.com/Tiburso/GoManager/internal/database"
+	"github.com/Tiburso/GoManager/models/application"
+	"github.com/Tiburso/GoManager/models/company"
+	"github.com/Tiburso/GoManager/models/db"
 )
 
 func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +36,7 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if the application already exists
-	res := database.DB.Limit(1).Find(&application.Application{}, "name = ? AND company_name = ?", name, company_name)
+	res := db.DB.Limit(1).Find(&application.Application{}, "name = ? AND company_name = ?", name, company_name)
 
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -49,9 +50,9 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// fetch the company from the database
-	var company application.Company
-	res = database.DB.First(&company, "name = ?", company_name)
+	// fetch the company from the db
+	var company company.Company
+	res = db.DB.First(&company, "name = ?", company_name)
 
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -67,8 +68,8 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create the application in the database
-	res = database.DB.Create(&app)
+	// Create the application in the db
+	res = db.DB.Create(&app)
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(res.Error.Error())
@@ -95,8 +96,8 @@ func DeleteApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Delete the application from the database
-	res := database.DB.Where("name = ? AND company_name = ?", name, company_name).Delete(&application.Application{})
+	// Delete the application from the db
+	res := db.DB.Where("name = ? AND company_name = ?", name, company_name).Delete(&application.Application{})
 
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -131,9 +132,9 @@ func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update the application in the database
+	// Update the application in the db
 	var app application.Application
-	res := database.DB.First(&app, "name = ? AND company_name = ?", name, company_name)
+	res := db.DB.First(&app, "name = ? AND company_name = ?", name, company_name)
 
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -175,7 +176,7 @@ func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	res = database.DB.Save(&app)
+	res = db.DB.Save(&app)
 
 	if res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -192,7 +193,7 @@ func GetApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var applications []application.Application
-	database.DB.Preload("Company").Find(&applications)
+	db.DB.Preload("Company").Find(&applications)
 
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)

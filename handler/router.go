@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/Tiburso/GoManager/common"
-	"github.com/Tiburso/GoManager/internal/handler/controllers"
+	"github.com/Tiburso/GoManager/handler/api"
 	"github.com/gorilla/mux"
 )
 
@@ -43,21 +43,21 @@ func NewServer() *ApiServer {
 
 func SetupRoutes(r *mux.Router) {
 	// define default prefix of /api/v1
-	api := r.PathPrefix("/api/v1").Subrouter()
+	g := r.PathPrefix("/api/v1").Subrouter()
 
 	// define health check endpoint
-	api.HandleFunc("/health", controllers.HealthCheckHandler).Methods("GET")
+	g.HandleFunc("/health", api.HealthCheckHandler).Methods("GET")
 
 	// company endpoints
-	api.HandleFunc("/company", controllers.CreateCompanyHandler).Methods("POST")
-	api.HandleFunc("/company", controllers.GetCompanyWithApplicationsHandler).Methods("GET")
-	api.HandleFunc("/companies", controllers.GetCompaniesHandler).Methods("GET")
+	g.HandleFunc("/company", api.CreateCompanyHandler).Methods("POST")
+	g.HandleFunc("/company", api.GetCompanyWithApplicationsHandler).Methods("GET")
+	g.HandleFunc("/companies", api.GetCompaniesHandler).Methods("GET")
 
 	// application endpoints
-	api.HandleFunc("/application", controllers.CreateApplicationHandler).Methods("POST")
-	api.HandleFunc("/application", controllers.UpdateApplicationHandler).Methods("PUT")
-	api.HandleFunc("/application", controllers.DeleteApplicationHandler).Methods("DELETE")
-	api.HandleFunc("/applications", controllers.GetApplicationsHandler).Methods("GET")
+	g.HandleFunc("/application", api.CreateApplicationHandler).Methods("POST")
+	g.HandleFunc("/application", api.UpdateApplicationHandler).Methods("PUT")
+	g.HandleFunc("/application", api.DeleteApplicationHandler).Methods("DELETE")
+	g.HandleFunc("/applications", api.GetApplicationsHandler).Methods("GET")
 }
 
 func (s *ApiServer) WaitForShutdown() {

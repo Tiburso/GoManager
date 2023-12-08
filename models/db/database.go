@@ -1,10 +1,11 @@
-package database
+package db
 
 import (
 	"fmt"
 
 	"github.com/Tiburso/GoManager/common"
-	"github.com/Tiburso/GoManager/internal/application"
+	"github.com/Tiburso/GoManager/models/application"
+	"github.com/Tiburso/GoManager/models/company"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -28,7 +29,8 @@ func ConnectDatabase() {
 	}
 
 	// Migrate the schema
-	err = DB.AutoMigrate(&application.Company{}, &application.Application{})
+	err = DB.AutoMigrate(&company.Company{}, &application.Application{})
+
 	if err != nil {
 		panic("failed to migrate database")
 	}

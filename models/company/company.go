@@ -1,4 +1,4 @@
-package application
+package company
 
 import (
 	"fmt"
@@ -6,9 +6,8 @@ import (
 )
 
 type Company struct {
-	Name            string        `json:"name" gorm:"primaryKey"`
-	CandidatePortal string        `json:"candidate_portal"`
-	Applications    []Application `gorm:"foreignKey:CompanyName;references:Name" json:"applications,omitempty"`
+	Name            string `json:"name" gorm:"primaryKey"`
+	CandidatePortal string `json:"candidate_portal"`
 }
 
 func isValidURL(url string) bool {
@@ -38,10 +37,6 @@ func NewCompany(name, candidatePortal string) (*Company, error) {
 		Name:            name,
 		CandidatePortal: candidatePortal,
 	}, nil
-}
-
-func (c *Company) GetApplications() []Application {
-	return c.Applications
 }
 
 func (c Company) String() string {

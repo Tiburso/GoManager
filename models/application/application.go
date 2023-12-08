@@ -3,6 +3,8 @@ package application
 import (
 	"fmt"
 	"time"
+
+	"github.com/Tiburso/GoManager/models/company"
 )
 
 // Types of applications
@@ -19,15 +21,15 @@ const (
 )
 
 type Application struct {
-	Name            string    `json:"name" gorm:"primaryKey"`
-	CompanyName     string    `json:"company_name" gorm:"primaryKey"`
-	Type            string    `json:"type,omitempty"`
-	Status          string    `json:"status,omitempty"`
-	ApplicationDate time.Time `json:"application_date,string,omitempty"`
-	Company         Company   `gorm:"foreignKey:CompanyName;references:Name" json:"company,omitempty"`
+	Name            string          `json:"name" gorm:"primaryKey"`
+	CompanyName     string          `json:"company_name" gorm:"primaryKey"`
+	Type            string          `json:"type,omitempty"`
+	Status          string          `json:"status,omitempty"`
+	ApplicationDate time.Time       `json:"application_date,omitempty"`
+	Company         company.Company `gorm:"foreignKey:CompanyName;references:Name" json:"company,omitempty"`
 }
 
-func NewApplication(name, applicationType, applicationDate string, company Company) (*Application, error) {
+func NewApplication(name, applicationType, applicationDate string, company company.Company) (*Application, error) {
 	if applicationType != FullTime && applicationType != PartTime && applicationType != Internship {
 		return nil, fmt.Errorf("'%s' is not a valid application type", applicationType)
 	}

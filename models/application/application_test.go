@@ -2,10 +2,12 @@ package application
 
 import (
 	"testing"
+
+	"github.com/Tiburso/GoManager/models/company"
 )
 
 func TestNewApplication(t *testing.T) {
-	company, err := NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := company.NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -27,7 +29,7 @@ func TestNewApplication(t *testing.T) {
 }
 
 func TestSetStatus(t *testing.T) {
-	company, err := NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := company.NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -59,7 +61,7 @@ func TestSetStatus(t *testing.T) {
 }
 
 func TestSetType(t *testing.T) {
-	company, err := NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := company.NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -91,7 +93,7 @@ func TestSetType(t *testing.T) {
 }
 
 func TestSetApplicationDate(t *testing.T) {
-	company, err := NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := company.NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -113,7 +115,7 @@ func TestSetApplicationDate(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
-	company, err := NewCompany("Test Company", "https://www.testcompany.com")
+	company, err := company.NewCompany("Test Company", "https://www.testcompany.com")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}

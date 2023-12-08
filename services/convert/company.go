@@ -3,6 +3,7 @@ package convert
 import (
 	"github.com/Tiburso/GoManager/models/application"
 	"github.com/Tiburso/GoManager/models/company"
+	"github.com/Tiburso/GoManager/models/db"
 	"github.com/Tiburso/GoManager/routers/structs"
 )
 
@@ -23,7 +24,9 @@ func ToCompanies(c []*company.Company) []*structs.Company {
 	return res
 }
 
-func ToCompanyWithApplications(c *company.Company, applications []*application.Application) *structs.CompanyWithApplications {
+func ToCompanyWithApplications(c *company.Company) *structs.CompanyWithApplications {
+	applications, _ := application.GetCompanyApplications(db.DB, c.Name)
+
 	return &structs.CompanyWithApplications{
 		Company:      *ToCompany(c),
 		Applications: ToApplicationCreations(applications),

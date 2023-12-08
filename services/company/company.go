@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"regexp"
 
-	applications_model "github.com/Tiburso/GoManager/models/application"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
 	"github.com/Tiburso/GoManager/routers/structs"
@@ -98,13 +97,7 @@ func GetCompanyWithApplications(name string) (*structs.CompanyWithApplications, 
 		return nil, err
 	}
 
-	applications, err := applications_model.GetCompanyApplications(db, company.Name)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return convert.ToCompanyWithApplications(company, applications), nil
+	return convert.ToCompanyWithApplications(company), nil
 }
 
 func GetCompanies() ([]*structs.Company, error) {

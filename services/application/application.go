@@ -11,6 +11,24 @@ import (
 	"github.com/Tiburso/GoManager/services/convert"
 )
 
+func IsValidType(t string) bool {
+	switch t {
+	case "full_time", "part_time", "internship":
+		return true
+	}
+
+	return false
+}
+
+func IsValidStatus(s string) bool {
+	switch s {
+	case "applied", "rejected", "accepted":
+		return true
+	}
+
+	return false
+}
+
 func CreateApplication(name string, applicationType string, applicationDate string, companyName string) error {
 	db := db.DB
 
@@ -20,6 +38,12 @@ func CreateApplication(name string, applicationType string, applicationDate stri
 		return fmt.Errorf("'%s' is not a valid date", applicationDate)
 	}
 
+	// Check if the application type is valid
+	if !IsValidType(applicationType) {
+		return fmt.Errorf("'%s' is not a valid application type", applicationType)
+	}
+
+	// Check if the company exists
 	company, err := company_model.GetCompany(db, companyName)
 
 	if err != nil {
@@ -65,6 +89,10 @@ func UpdateApplication(name, applicationType, applicationDate, applicationStatus
 	}
 
 	if applicationType != "" {
+		if !IsValidType(applicationType) {
+			return fmt.Errorf("'%s' is not a valid application type", applicationType)
+		}
+
 		application.Type = application_model.Type(applicationType)
 	}
 
@@ -77,6 +105,10 @@ func UpdateApplication(name, applicationType, applicationDate, applicationStatus
 	}
 
 	if applicationStatus != "" {
+		if !IsValidStatus(applicationStatus) {
+			return fmt.Errorf("'%s' is not a valid application status", applicationStatus)
+		}
+
 		application.Status = application_model.Status(applicationStatus)
 	}
 

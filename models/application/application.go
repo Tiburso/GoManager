@@ -87,7 +87,7 @@ func UpdateApplication(db *gorm.DB, a *Application) error {
 func GetApplication(db *gorm.DB, name string, companyName string) (*Application, error) {
 	var app Application
 
-	res := db.Model(&Application{}).Preload("company").Find(&app, "name = ? AND company_name = ?", name, companyName)
+	res := db.Limit(1).Find(&app, "name = ? AND company_name = ?", name, companyName)
 
 	if res.Error != nil {
 		return nil, res.Error

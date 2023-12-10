@@ -1,12 +1,23 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/Tiburso/GoManager/common"
 	"github.com/Tiburso/GoManager/common/structs"
 )
+
+type Request struct {
+	Protocol string
+	Endpoint string
+
+	Body        map[string]any
+	Headers     map[string]string
+	QueryParams map[string]string
+}
 
 func PrintApplications(response *http.Response) error {
 	applications := []structs.Application{}
@@ -81,4 +92,53 @@ func PrintCompany(response *http.Response) error {
 	defer response.Body.Close()
 
 	return nil
+}
+
+func GetServerUrl() string {
+	protocol := common.GetEnvWithDefault("PROTOCOL", "http")
+	endpoint := common.GetEnvWithDefault("ENDPOINT", "localhost")
+	port := common.GetEnvWithDefault("PORT", "8080")
+
+	return protocol + "://" + endpoint + ":" + port + "/api/v1"
+}
+
+func ApiRequest(request *Request) (*http.Response, error) {
+	url := GetServerUrl() + request.Endpoint
+
+	client := &http.Client{}
+
+	// marshall body
+	body, err := json.Marshal(request.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(request.Protocol, url, bytes.NewBuffer(body))
+
+	if err != nil {
+		return nil, err
+	}
+
+	// add json headers
+	req.Header.Set("Content-Type", "application/json")
+	for key, value := range request.Headers {
+		req.Header.Set(key, value)
+	}
+
+	q := req.URL.Query()
+
+	for key, value := range request.QueryParams {
+		q.Add(key, value)
+	}
+
+	req.URL.RawQuery = q.Encode()
+
+	res, err := client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

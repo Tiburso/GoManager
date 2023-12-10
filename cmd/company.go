@@ -1,0 +1,164 @@
+package cmd
+
+import (
+	"errors"
+	"log"
+
+	"github.com/urfave/cli/v2"
+)
+
+func CreateCompany(cCtx *cli.Context) error {
+	res, err := ApiRequest(&Request{
+		Protocol: "POST",
+		Endpoint: "/company",
+		Body: map[string]any{
+			"name":             cCtx.String("name"),
+			"candidate_portal": cCtx.String("portal"),
+		},
+		Headers:     map[string]string{},
+		QueryParams: map[string]string{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("company creation failed")
+	}
+	defer res.Body.Close()
+
+	log.Println("Company created successfully")
+
+	return nil
+}
+
+func CreateCompanySubCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "create",
+		Aliases:     []string{"c"},
+		Usage:       "create company",
+		Description: "create company",
+		Action:      CreateCompany,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "name",
+				Aliases:  []string{"n"},
+				Usage:    "company name",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "portal",
+				Aliases:  []string{"p"},
+				Usage:    "company portal",
+				Required: true,
+			},
+		},
+	}
+}
+
+func DeleteCompany(cCtx *cli.Context) error {
+	return nil
+}
+
+func DeleteCompanySubCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "delete",
+		Aliases:     []string{"d"},
+		Usage:       "delete company",
+		Description: "delete company",
+		Action:      DeleteCompany,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "name",
+				Aliases:  []string{"n"},
+				Usage:    "company name",
+				Required: true,
+			},
+		},
+	}
+}
+
+func GetCompany(cCtx *cli.Context) error {
+	if cCtx.Bool("all") {
+		return GetCompanies(cCtx)
+	}
+
+	res, err := ApiRequest(&Request{
+		Protocol: "GET",
+		Endpoint: "/company",
+		Body:     map[string]any{},
+		Headers:  map[string]string{},
+		QueryParams: map[string]string{
+			"name": cCtx.String("name"),
+		},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("getting company failed")
+	}
+
+	return PrintCompany(res)
+}
+
+func GetCompanies(cCtx *cli.Context) error {
+	res, err := ApiRequest(&Request{
+		Protocol:    "GET",
+		Endpoint:    "/companies",
+		Body:        map[string]any{},
+		Headers:     map[string]string{},
+		QueryParams: map[string]string{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("getting companies failed")
+	}
+
+	return PrintCompanies(res)
+}
+
+func GetCompanySubCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "get",
+		Aliases:     []string{"g"},
+		Usage:       "get company",
+		Description: "get company",
+		Action:      GetCompany,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "name",
+				Aliases:  []string{"n"},
+				Usage:    "company name",
+				Required: false,
+			},
+			&cli.BoolFlag{
+				Name:     "all",
+				Aliases:  []string{"a"},
+				Usage:    "get all companies",
+				Required: false,
+			},
+		},
+	}
+}
+
+func CompanyCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "company",
+		Aliases:     []string{"c"},
+		Usage:       "company",
+		Description: "company",
+		Subcommands: []*cli.Command{
+			CreateCompanySubCommand(),
+			DeleteCompanySubCommand(),
+			GetCompanySubCommand(),
+		},
+	}
+}

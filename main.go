@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/Tiburso/GoManager/cmd"
 	"github.com/urfave/cli/v2"
 )
 
@@ -13,8 +14,8 @@ func main() {
 		Name:                 "GoManager",
 		Usage:                "GoManager CLI",
 		Commands: []*cli.Command{
-			ServerCommand(),
-			ClientCommand(),
+			cmd.ServerCommand(),
+			cmd.ClientCommand(),
 		},
 	}
 

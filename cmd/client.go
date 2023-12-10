@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"bytes"
@@ -89,7 +89,7 @@ func CreateApplication(cCtx *cli.Context) error {
 	}
 
 	if res.StatusCode != 200 {
-		return errors.New("creating application")
+		return errors.New("application creation failed")
 	}
 
 	log.Println("Application created successfully")

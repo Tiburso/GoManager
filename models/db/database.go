@@ -29,5 +29,9 @@ func ConnectDatabase() error {
 	}
 
 	// Migrate the schema
+	return AutoMigrate()
+}
+
+func AutoMigrate() error {
 	return DB.AutoMigrate(&company.Company{}, &application.Application{})
 }

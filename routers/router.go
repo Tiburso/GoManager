@@ -52,12 +52,14 @@ func SetupRoutes(r *mux.Router) {
 	g.HandleFunc("/company", api.CreateCompanyHandler).Methods("POST")
 	g.HandleFunc("/company", api.GetCompanyWithApplicationsHandler).Methods("GET")
 	g.HandleFunc("/companies", api.GetCompaniesHandler).Methods("GET")
+	g.HandleFunc("/company", api.EditCompanyHandler).Methods("PUT")
+	g.HandleFunc("/company", api.DeleteCompanyHandler).Methods("DELETE")
 
 	// application endpoints
 	g.HandleFunc("/application", api.CreateApplicationHandler).Methods("POST")
+	g.HandleFunc("/applications", api.GetApplicationsHandler).Methods("GET")
 	g.HandleFunc("/application", api.UpdateApplicationHandler).Methods("PUT")
 	g.HandleFunc("/application", api.DeleteApplicationHandler).Methods("DELETE")
-	g.HandleFunc("/applications", api.GetApplicationsHandler).Methods("GET")
 }
 
 func (s *ApiServer) WaitForShutdown() {

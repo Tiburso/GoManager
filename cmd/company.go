@@ -84,6 +84,10 @@ func GetCompany(cCtx *cli.Context) error {
 		return GetCompanies(cCtx)
 	}
 
+	if !cCtx.IsSet("name") {
+		return errors.New("name is required")
+	}
+
 	res, err := ApiRequest(&Request{
 		Protocol: "GET",
 		Endpoint: "/company",
@@ -144,6 +148,57 @@ func GetCompanySubCommand() *cli.Command {
 				Aliases:  []string{"a"},
 				Usage:    "get all companies",
 				Required: false,
+			},
+		},
+	}
+}
+
+func EditCompany(cCtx *cli.Context) error {
+	res, err := ApiRequest(&Request{
+		Protocol: "PUT",
+		Endpoint: "/company",
+		Body: map[string]any{
+			"name":             cCtx.String("name"),
+			"candidate_portal": cCtx.String("portal"),
+		},
+		Headers:     map[string]string{},
+		QueryParams: map[string]string{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("company edit failed")
+	}
+
+	defer res.Body.Close()
+
+	log.Println("Company edited successfully")
+
+	return nil
+}
+
+func EditCompanySubCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "edit",
+		Aliases:     []string{"e"},
+		Usage:       "edit company",
+		Description: "edit company",
+		Action:      EditCompany,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "name",
+				Aliases:  []string{"n"},
+				Usage:    "company name",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "portal",
+				Aliases:  []string{"p"},
+				Usage:    "company portal",
+				Required: true,
 			},
 		},
 	}

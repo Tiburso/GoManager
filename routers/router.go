@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/Tiburso/GoManager/common"
 	"github.com/Tiburso/GoManager/routers/api"
 	"github.com/gorilla/mux"
 )
@@ -19,9 +18,7 @@ type ApiServer struct {
 	// reqCount uint32
 }
 
-func NewServer() *ApiServer {
-	port := common.GetEnvWithDefault("PORT", "8080")
-
+func NewServer(port string) *ApiServer {
 	srv := &ApiServer{
 		Server: http.Server{
 			Addr:         ":" + port,
@@ -104,7 +101,7 @@ func (s *ApiServer) Start() {
 	<-done
 }
 
-func RunServer() {
-	srv := NewServer()
+func RunServer(port string) {
+	srv := NewServer(port)
 	srv.Start()
 }

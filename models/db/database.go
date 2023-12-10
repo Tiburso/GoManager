@@ -14,7 +14,7 @@ import (
 var DB *gorm.DB
 var err error
 
-func ConnectDatabase() {
+func ConnectDatabase() error {
 	host := common.GetEnvWithDefault("DB_HOST", "localhost")
 	user := common.GetEnvWithDefault("DB_USER", "postgres")
 	password := common.GetEnvWithDefault("DB_PASSWORD", "postgres")
@@ -29,9 +29,5 @@ func ConnectDatabase() {
 	}
 
 	// Migrate the schema
-	err = DB.AutoMigrate(&company.Company{}, &application.Application{})
-
-	if err != nil {
-		panic("failed to migrate database")
-	}
+	return DB.AutoMigrate(&company.Company{}, &application.Application{})
 }

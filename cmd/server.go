@@ -10,29 +10,40 @@ import (
 func RunServer(cCtx *cli.Context) error {
 	common.LoadEnv()
 
+	port := cCtx.String("port")
+
 	// This sets up the db connection
-	db.ConnectDatabase()
+	if err := db.ConnectDatabase(); err != nil {
+		return err
+	}
 
 	// The server can only run when the db connection is established
-	routers.RunServer()
+	routers.RunServer(port)
 
 	return nil
 }
 
-func ServerCommand() *cli.Command {
-	return &cli.Command{
-		Name:        "server",
-		Aliases:     []string{"s"},
-		Usage:       "server commands",
-		Description: "server commands",
-		Subcommands: []*cli.Command{
-			{
-				Name:        "run",
-				Aliases:     []string{"r"},
-				Usage:       "run server",
-				Description: "run server",
-				Action:      RunServer,
+var ServerCommand *cli.Command = &cli.Command{
+	Name:        "server",
+	Aliases:     []string{"s"},
+	Usage:       "server commands",
+	Description: "server commands",
+	Subcommands: []*cli.Command{
+		{
+			Name:        "run",
+			Aliases:     []string{"r"},
+			Usage:       "run server",
+			Description: "run server",
+			Action:      RunServer,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:        "port",
+					Aliases:     []string{"p"},
+					Usage:       "server port",
+					Required:    false,
+					DefaultText: "8080",
+				},
 			},
 		},
-	}
+	},
 }

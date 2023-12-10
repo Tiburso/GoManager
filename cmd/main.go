@@ -3,11 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
+	"os"
 	"strings"
 
-	"github.com/Tiburso/GoManager/common"
-	"github.com/Tiburso/GoManager/models/db"
-	"github.com/Tiburso/GoManager/routers"
+	"github.com/urfave/cli/v2"
 )
 
 func ReadLine(scanner *bufio.Scanner) string {
@@ -67,11 +67,18 @@ func ShowMenu() {
 // }
 
 func main() {
-	common.LoadEnv()
+	app := &cli.App{
+		EnableBashCompletion: true,
+		Name:                 "GoManager",
+		Usage:                "GoManager CLI",
+		Commands: []*cli.Command{
+			ServerCommand(),
+			ClientCommand(),
+		},
+	}
 
-	// This sets up the db connection
-	db.ConnectDatabase()
-
-	// The server can only run when the db connection is established
-	routers.RunServer()
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

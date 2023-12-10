@@ -35,7 +35,6 @@ func CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send a JSON response
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(company)
 }
 
 func GetCompaniesHandler(w http.ResponseWriter, r *http.Request) {

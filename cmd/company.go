@@ -23,7 +23,7 @@ func CreateCompany(cCtx *cli.Context) error {
 		return err
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != 201 {
 		return errors.New("company creation failed")
 	}
 	defer res.Body.Close()

@@ -46,7 +46,7 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send a JSON response
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 }
 
 func DeleteApplicationHandler(w http.ResponseWriter, r *http.Request) {

@@ -25,7 +25,7 @@ func CreateApplication(cCtx *cli.Context) error {
 		return err
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != 201 {
 		return errors.New("application creation failed")
 	}
 	defer res.Body.Close()

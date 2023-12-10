@@ -1,8 +1,8 @@
 package convert
 
 import (
+	"github.com/Tiburso/GoManager/common/structs"
 	"github.com/Tiburso/GoManager/models/application"
-	"github.com/Tiburso/GoManager/routers/structs"
 )
 
 func ToApplicationCreation(a *application.Application) *structs.ApplicationCreation {

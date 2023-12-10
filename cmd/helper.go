@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Tiburso/GoManager/routers/structs"
+	"github.com/Tiburso/GoManager/common/structs"
 )
 
 func PrintApplications(response *http.Response) error {

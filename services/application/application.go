@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Tiburso/GoManager/common/structs"
 	application_model "github.com/Tiburso/GoManager/models/application"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
-	"github.com/Tiburso/GoManager/routers/structs"
 	"github.com/Tiburso/GoManager/services/convert"
 )
 

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Tiburso/GoManager/routers/structs"
+	"github.com/Tiburso/GoManager/common/structs"
 	company_service "github.com/Tiburso/GoManager/services/company"
 )
 

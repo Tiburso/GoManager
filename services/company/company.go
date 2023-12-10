@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/Tiburso/GoManager/common/structs"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
-	"github.com/Tiburso/GoManager/routers/structs"
 	"github.com/Tiburso/GoManager/services/convert"
 )
 

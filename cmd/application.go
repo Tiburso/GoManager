@@ -169,7 +169,7 @@ func DeleteApplication(cCtx *cli.Context) error {
 		return err
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != 204 {
 		return errors.New("application deletion failed")
 	}
 

@@ -25,6 +25,7 @@ const (
 )
 
 type Application struct {
+	*gorm.Model
 	Name            string `gorm:"primaryKey"`
 	Type            Type
 	Status          Status

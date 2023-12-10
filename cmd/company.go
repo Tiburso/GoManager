@@ -58,6 +58,27 @@ func CreateCompanySubCommand() *cli.Command {
 }
 
 func DeleteCompany(cCtx *cli.Context) error {
+	res, err := ApiRequest(&Request{
+		Protocol: "DELETE",
+		Endpoint: "/company",
+		Body:     map[string]any{},
+		Headers:  map[string]string{},
+		QueryParams: map[string]string{
+			"name": cCtx.String("name"),
+		},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 204 {
+		return errors.New("company deletion failed")
+	}
+	defer res.Body.Close()
+
+	log.Println("Company deleted successfully")
+
 	return nil
 }
 
@@ -214,6 +235,7 @@ func CompanyCommand() *cli.Command {
 			CreateCompanySubCommand(),
 			DeleteCompanySubCommand(),
 			GetCompanySubCommand(),
+			EditCompanySubCommand(),
 		},
 	}
 }

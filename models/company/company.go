@@ -7,6 +7,7 @@ import (
 )
 
 type Company struct {
+	*gorm.Model
 	Name            string `gorm:"primaryKey"`
 	CandidatePortal string
 }

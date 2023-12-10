@@ -35,40 +35,38 @@ func CreateApplication(cCtx *cli.Context) error {
 	return nil
 }
 
-func CreateApplicationSubCommand() *cli.Command {
-	return &cli.Command{
-		Name:        "create",
-		Aliases:     []string{"c"},
-		Usage:       "create application",
-		Description: "create application",
-		Action:      CreateApplication,
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:     "name",
-				Aliases:  []string{"n"},
-				Usage:    "application name",
-				Required: true,
-			},
-			&cli.StringFlag{
-				Name:     "company",
-				Aliases:  []string{"c"},
-				Usage:    "company name",
-				Required: true,
-			},
-			&cli.StringFlag{
-				Name:     "type",
-				Aliases:  []string{"t"},
-				Usage:    "application type",
-				Required: true,
-			},
-			&cli.StringFlag{
-				Name:     "date",
-				Aliases:  []string{"d"},
-				Usage:    "application date",
-				Required: true,
-			},
+var createApplicationSubCommand *cli.Command = &cli.Command{
+	Name:        "create",
+	Aliases:     []string{"c"},
+	Usage:       "create application",
+	Description: "create application",
+	Action:      CreateApplication,
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "name",
+			Aliases:  []string{"n"},
+			Usage:    "application name",
+			Required: true,
 		},
-	}
+		&cli.StringFlag{
+			Name:     "company",
+			Aliases:  []string{"c"},
+			Usage:    "company name",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "type",
+			Aliases:  []string{"t"},
+			Usage:    "application type",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "date",
+			Aliases:  []string{"d"},
+			Usage:    "application date",
+			Required: true,
+		},
+	},
 }
 
 func EditApplication(cCtx *cli.Context) error {
@@ -112,46 +110,44 @@ func EditApplication(cCtx *cli.Context) error {
 	return nil
 }
 
-func EditApplicationSubCommand() *cli.Command {
-	return &cli.Command{
-		Name:        "edit",
-		Aliases:     []string{"e"},
-		Usage:       "edit application",
-		Description: "edit application",
-		Action:      EditApplication,
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:     "name",
-				Aliases:  []string{"n"},
-				Usage:    "application name",
-				Required: true,
-			},
-			&cli.StringFlag{
-				Name:     "company",
-				Aliases:  []string{"c"},
-				Usage:    "company name",
-				Required: true,
-			},
-			&cli.StringFlag{
-				Name:     "type",
-				Aliases:  []string{"t"},
-				Usage:    "application type",
-				Required: false,
-			},
-			&cli.StringFlag{
-				Name:     "date",
-				Aliases:  []string{"d"},
-				Usage:    "application date",
-				Required: false,
-			},
-			&cli.StringFlag{
-				Name:     "status",
-				Aliases:  []string{"s"},
-				Usage:    "application status",
-				Required: false,
-			},
+var editApplicationSubCommand *cli.Command = &cli.Command{
+	Name:        "edit",
+	Aliases:     []string{"e"},
+	Usage:       "edit application",
+	Description: "edit application",
+	Action:      EditApplication,
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "name",
+			Aliases:  []string{"n"},
+			Usage:    "application name",
+			Required: true,
 		},
-	}
+		&cli.StringFlag{
+			Name:     "company",
+			Aliases:  []string{"c"},
+			Usage:    "company name",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "type",
+			Aliases:  []string{"t"},
+			Usage:    "application type",
+			Required: false,
+		},
+		&cli.StringFlag{
+			Name:     "date",
+			Aliases:  []string{"d"},
+			Usage:    "application date",
+			Required: false,
+		},
+		&cli.StringFlag{
+			Name:     "status",
+			Aliases:  []string{"s"},
+			Usage:    "application status",
+			Required: false,
+		},
+	},
 }
 
 func DeleteApplication(cCtx *cli.Context) error {
@@ -180,28 +176,26 @@ func DeleteApplication(cCtx *cli.Context) error {
 	return nil
 }
 
-func DeleteApplicationSubCommand() *cli.Command {
-	return &cli.Command{
-		Name:        "delete",
-		Aliases:     []string{"d"},
-		Usage:       "delete application",
-		Description: "delete application",
-		Action:      DeleteApplication,
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:     "name",
-				Aliases:  []string{"n"},
-				Usage:    "application name",
-				Required: true,
-			},
-			&cli.StringFlag{
-				Name:     "company",
-				Aliases:  []string{"c"},
-				Usage:    "company name",
-				Required: true,
-			},
+var deleteApplicationSubCommand *cli.Command = &cli.Command{
+	Name:        "delete",
+	Aliases:     []string{"d"},
+	Usage:       "delete application",
+	Description: "delete application",
+	Action:      DeleteApplication,
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "name",
+			Aliases:  []string{"n"},
+			Usage:    "application name",
+			Required: true,
 		},
-	}
+		&cli.StringFlag{
+			Name:     "company",
+			Aliases:  []string{"c"},
+			Usage:    "company name",
+			Required: true,
+		},
+	},
 }
 
 func GetApplications(cCtx *cli.Context) error {
@@ -224,35 +218,31 @@ func GetApplications(cCtx *cli.Context) error {
 	return PrintApplications(res)
 }
 
-func GetApplicationsSubCommand() *cli.Command {
-	return &cli.Command{
-		Name:        "get",
-		Aliases:     []string{"ga"},
-		Usage:       "get applications",
-		Description: "get applications",
-		Action:      GetApplications,
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:     "all",
-				Aliases:  []string{"a"},
-				Usage:    "get all applications",
-				Required: true,
-			},
+var getApplicationsSubCommand *cli.Command = &cli.Command{
+	Name:        "get",
+	Aliases:     []string{"ga"},
+	Usage:       "get applications",
+	Description: "get applications",
+	Action:      GetApplications,
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:     "all",
+			Aliases:  []string{"a"},
+			Usage:    "get all applications",
+			Required: true,
 		},
-	}
+	},
 }
 
-func ApplicationCommand() *cli.Command {
-	return &cli.Command{
-		Name:        "application",
-		Aliases:     []string{"a"},
-		Usage:       "application commands",
-		Description: "application commands",
-		Subcommands: []*cli.Command{
-			CreateApplicationSubCommand(),
-			EditApplicationSubCommand(),
-			DeleteApplicationSubCommand(),
-			GetApplicationsSubCommand(),
-		},
-	}
+var ApplicationCommand *cli.Command = &cli.Command{
+	Name:        "application",
+	Aliases:     []string{"a"},
+	Usage:       "application commands",
+	Description: "application commands",
+	Subcommands: []*cli.Command{
+		createApplicationSubCommand,
+		editApplicationSubCommand,
+		deleteApplicationSubCommand,
+		getApplicationsSubCommand,
+	},
 }

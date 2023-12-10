@@ -11,7 +11,8 @@ func ClientCommand() *cli.Command {
 		Usage:       "client commands",
 		Description: "client commands",
 		Subcommands: []*cli.Command{
-			CompanyCommand(),
+			CompanyCommand,
+			ApplicationCommand,
 		},
 	}
 }

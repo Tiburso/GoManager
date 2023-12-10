@@ -75,7 +75,7 @@ func PrintCompany(response *http.Response) error {
 		fmt.Print(application.Name + " ")
 		fmt.Print(application.Type + " ")
 		fmt.Print(application.Status + " ")
-		fmt.Print(application.ApplicationDate + " ")
+		fmt.Println(application.ApplicationDate + " ")
 	}
 
 	defer response.Body.Close()

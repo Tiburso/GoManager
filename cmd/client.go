@@ -1,8 +1,99 @@
 package main
 
-import "github.com/urfave/cli/v2"
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"log"
+	"net/http"
+
+	"github.com/Tiburso/GoManager/common"
+	"github.com/urfave/cli/v2"
+)
+
+type Request struct {
+	Protocol string
+	Endpoint string
+
+	Body        map[string]any
+	Headers     map[string]string
+	QueryParams map[string]string
+}
+
+func GetServerUrl() string {
+	protocol := common.GetEnvWithDefault("PROTOCOL", "http")
+	endpoint := common.GetEnvWithDefault("ENDPOINT", "localhost")
+	port := common.GetEnvWithDefault("PORT", "8080")
+
+	return protocol + "://" + endpoint + ":" + port
+}
+
+func ApiRequest(request *Request) (*http.Response, error) {
+	url := GetServerUrl() + request.Endpoint
+
+	client := &http.Client{}
+
+	// marshall body
+	body, err := json.Marshal(request.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(request.Protocol, url, bytes.NewBuffer(body))
+
+	if err != nil {
+		return nil, err
+	}
+
+	// add json headers
+	req.Header.Set("Content-Type", "application/json")
+	for key, value := range request.Headers {
+		req.Header.Set(key, value)
+	}
+
+	q := req.URL.Query()
+
+	for key, value := range request.QueryParams {
+		q.Add(key, value)
+	}
+
+	req.URL.RawQuery = q.Encode()
+
+	res, err := client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	return res, nil
+}
 
 func CreateApplication(cCtx *cli.Context) error {
+	res, err := ApiRequest(&Request{
+		Protocol: "POST",
+		Endpoint: "/application",
+		Body: map[string]any{
+			"name":            cCtx.String("name"),
+			"company":         cCtx.String("company"),
+			"applicationType": cCtx.String("type"),
+			"date":            cCtx.String("date"),
+		},
+		Headers:     map[string]string{},
+		QueryParams: map[string]string{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("creating application")
+	}
+
+	log.Println("Application created successfully")
+
 	return nil
 }
 

@@ -14,8 +14,8 @@ func main() {
 		Name:                 "GoManager",
 		Usage:                "GoManager CLI",
 		Commands: []*cli.Command{
-			cmd.ServerCommand(),
-			cmd.ClientCommand(),
+			cmd.ServerCommand,
+			cmd.ClientCommand,
 		},
 	}
 

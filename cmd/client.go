@@ -25,7 +25,7 @@ func GetServerUrl() string {
 	endpoint := common.GetEnvWithDefault("ENDPOINT", "localhost")
 	port := common.GetEnvWithDefault("PORT", "8080")
 
-	return protocol + "://" + endpoint + ":" + port
+	return protocol + "://" + endpoint + ":" + port + "/api/v1"
 }
 
 func ApiRequest(request *Request) (*http.Response, error) {
@@ -65,7 +65,6 @@ func ApiRequest(request *Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
 
 	return res, nil
 }
@@ -75,10 +74,10 @@ func CreateApplication(cCtx *cli.Context) error {
 		Protocol: "POST",
 		Endpoint: "/application",
 		Body: map[string]any{
-			"name":            cCtx.String("name"),
-			"company":         cCtx.String("company"),
-			"applicationType": cCtx.String("type"),
-			"date":            cCtx.String("date"),
+			"name":             cCtx.String("name"),
+			"company_name":     cCtx.String("company"),
+			"type":             cCtx.String("type"),
+			"application_date": cCtx.String("date"),
 		},
 		Headers:     map[string]string{},
 		QueryParams: map[string]string{},
@@ -91,6 +90,7 @@ func CreateApplication(cCtx *cli.Context) error {
 	if res.StatusCode != 200 {
 		return errors.New("application creation failed")
 	}
+	defer res.Body.Close()
 
 	log.Println("Application created successfully")
 
@@ -134,6 +134,43 @@ func CreateApplicationSubCommand() *cli.Command {
 }
 
 func EditApplication(cCtx *cli.Context) error {
+	body := map[string]any{}
+
+	body["name"] = cCtx.String("name")
+	body["company_name"] = cCtx.String("company")
+
+	if cCtx.IsSet("type") {
+		body["type"] = cCtx.String("type")
+	}
+
+	if cCtx.IsSet("date") {
+		body["application_date"] = cCtx.String("date")
+	}
+
+	if cCtx.IsSet("status") {
+		body["status"] = cCtx.String("status")
+	}
+
+	res, err := ApiRequest(&Request{
+		Protocol:    "PUT",
+		Endpoint:    "/application",
+		Body:        body,
+		Headers:     map[string]string{},
+		QueryParams: map[string]string{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("application edit failed")
+	}
+
+	defer res.Body.Close()
+
+	log.Println("Application edited successfully")
+
 	return nil
 }
 
@@ -180,6 +217,28 @@ func EditApplicationSubCommand() *cli.Command {
 }
 
 func DeleteApplication(cCtx *cli.Context) error {
+	res, err := ApiRequest(&Request{
+		Protocol: "DELETE",
+		Endpoint: "/application",
+		Body:     map[string]any{},
+		Headers:  map[string]string{},
+		QueryParams: map[string]string{
+			"name": cCtx.String("name"),
+		},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("application deletion failed")
+	}
+
+	defer res.Body.Close()
+
+	log.Println("Application deleted successfully")
+
 	return nil
 }
 
@@ -208,7 +267,23 @@ func DeleteApplicationSubCommand() *cli.Command {
 }
 
 func GetApplications(cCtx *cli.Context) error {
-	return nil
+	res, err := ApiRequest(&Request{
+		Protocol:    "GET",
+		Endpoint:    "/applications",
+		Body:        map[string]any{},
+		Headers:     map[string]string{},
+		QueryParams: map[string]string{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("getting applications failed")
+	}
+
+	return PrintApplications(res)
 }
 
 func GetApplicationsSubCommand() *cli.Command {
@@ -222,6 +297,28 @@ func GetApplicationsSubCommand() *cli.Command {
 }
 
 func CreateCompany(cCtx *cli.Context) error {
+	res, err := ApiRequest(&Request{
+		Protocol: "POST",
+		Endpoint: "/company",
+		Body: map[string]any{
+			"name":             cCtx.String("name"),
+			"candidate_portal": cCtx.String("portal"),
+		},
+		Headers:     map[string]string{},
+		QueryParams: map[string]string{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("company creation failed")
+	}
+	defer res.Body.Close()
+
+	log.Println("Company created successfully")
+
 	return nil
 }
 
@@ -272,7 +369,23 @@ func DeleteCompanySubCommand() *cli.Command {
 }
 
 func GetCompanies(cCtx *cli.Context) error {
-	return nil
+	res, err := ApiRequest(&Request{
+		Protocol:    "GET",
+		Endpoint:    "/companies",
+		Body:        map[string]any{},
+		Headers:     map[string]string{},
+		QueryParams: map[string]string{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("getting companies failed")
+	}
+
+	return PrintCompanies(res)
 }
 
 func GetCompaniesSubCommand() *cli.Command {
@@ -286,7 +399,25 @@ func GetCompaniesSubCommand() *cli.Command {
 }
 
 func GetCompany(cCtx *cli.Context) error {
-	return nil
+	res, err := ApiRequest(&Request{
+		Protocol: "GET",
+		Endpoint: "/company",
+		Body:     map[string]any{},
+		Headers:  map[string]string{},
+		QueryParams: map[string]string{
+			"name": cCtx.String("name"),
+		},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return errors.New("getting company failed")
+	}
+
+	return PrintCompany(res)
 }
 
 func GetCompanySubCommand() *cli.Command {

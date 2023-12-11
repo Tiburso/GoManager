@@ -4,9 +4,61 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Tiburso/GoManager/common"
 	"github.com/Tiburso/GoManager/models/company"
 	"gorm.io/gorm"
 )
+
+type ErrDuplicateApplication struct {
+	Name        string
+	CompanyName string
+}
+
+func (e ErrDuplicateApplication) Error() string {
+	return fmt.Sprintf("application with name %s already exists for company %s", e.Name, e.CompanyName)
+}
+
+func (e ErrDuplicateApplication) Unwrap() error {
+	return common.ErrAlreadyExist
+}
+
+type ErrApplicationNotFound struct {
+	Name        string
+	CompanyName string
+}
+
+func (e ErrApplicationNotFound) Error() string {
+	return fmt.Sprintf("application with name %s does not exist for company %s", e.Name, e.CompanyName)
+}
+
+func (e ErrApplicationNotFound) Unwrap() error {
+	return common.ErrNotExist
+}
+
+// Invalid arguments
+type ErrInvalidApplicationType struct {
+	Type string
+}
+
+func (e ErrInvalidApplicationType) Error() string {
+	return fmt.Sprintf("invalid application type %s", e.Type)
+}
+
+func (e ErrInvalidApplicationType) Unwrap() error {
+	return common.ErrInvalidArgument
+}
+
+type ErrInvalidApplicationStatus struct {
+	Status string
+}
+
+func (e ErrInvalidApplicationStatus) Error() string {
+	return fmt.Sprintf("invalid application status %s", e.Status)
+}
+
+func (e ErrInvalidApplicationStatus) Unwrap() error {
+	return common.ErrInvalidArgument
+}
 
 type Type string
 
@@ -44,7 +96,7 @@ func NewApplication(db *gorm.DB, app *Application) error {
 	}
 
 	if res.RowsAffected > 0 {
-		return fmt.Errorf("application already exists")
+		return ErrDuplicateApplication{Name: app.Name, CompanyName: app.CompanyName}
 	}
 
 	// create application
@@ -65,7 +117,7 @@ func DeleteApplication(db *gorm.DB, name string, companyName string) error {
 	}
 
 	if res.RowsAffected == 0 {
-		return fmt.Errorf("application does not exist")
+		return ErrApplicationNotFound{Name: name, CompanyName: companyName}
 	}
 
 	return nil
@@ -79,7 +131,7 @@ func UpdateApplication(db *gorm.DB, a *Application) error {
 	}
 
 	if res.RowsAffected == 0 {
-		return fmt.Errorf("application does not exist")
+		return ErrApplicationNotFound{Name: a.Name, CompanyName: a.CompanyName}
 	}
 
 	return nil
@@ -95,7 +147,7 @@ func GetApplication(db *gorm.DB, name string, companyName string) (*Application,
 	}
 
 	if res.RowsAffected == 0 {
-		return nil, fmt.Errorf("application does not exist")
+		return nil, ErrApplicationNotFound{Name: name, CompanyName: companyName}
 	}
 
 	return &app, nil

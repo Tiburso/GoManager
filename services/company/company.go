@@ -33,7 +33,7 @@ func CreateCompany(name, candidatePortal string) error {
 	}
 
 	if candidatePortal == "" || !isValidURL(candidatePortal) {
-		return fmt.Errorf("missing or invalid candidate portal URL")
+		return company_model.ErrCompanyInvalidURL{URL: candidatePortal}
 	}
 
 	company := &company_model.Company{

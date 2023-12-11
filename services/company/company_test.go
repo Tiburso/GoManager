@@ -9,7 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewValidCompany(t *testing.T) {
+func TestNewCompany(t *testing.T) {
+	assert.NoError(t, unittest.PrepareTestDatabase())
+
 	err := CreateCompany("Test Company", "https://www.testcompany.com/careers")
 
 	assert.NoError(t, err)
@@ -21,25 +23,18 @@ func TestNewValidCompany(t *testing.T) {
 }
 
 func TestNewDuplicateCompany(t *testing.T) {
-	err := CreateCompany("Test Company", "https://www.testcompany.com/careers")
+	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	assert.NoError(t, err)
-
-	c, err := company_model.GetCompany(db.DB, "Test Company")
-
-	assert.NoError(t, err)
-	unittest.AssertExists(t, c)
-
-	err = CreateCompany("Test Company", "https://www.testcompany.com/careers")
+	err := CreateCompany("Company 1", "https://www.testcompany.com/careers")
 
 	if assert.Error(t, err) {
 		assert.IsType(t, company_model.ErrDuplicateCompany{}, err)
 	}
-
-	assert.Nil(t, c)
 }
 
 func TestNewInvalidURLCompany(t *testing.T) {
+	assert.NoError(t, unittest.PrepareTestDatabase())
+
 	err := CreateCompany("Test Company", "invalid_url")
 
 	if assert.Error(t, err) {
@@ -53,6 +48,8 @@ func TestNewInvalidURLCompany(t *testing.T) {
 }
 
 func TestDeleteCompany(t *testing.T) {
+	assert.NoError(t, unittest.PrepareTestDatabase())
+
 	err := CreateCompany("Test Company", "https://www.testcompany.com/careers")
 
 	assert.NoError(t, err)
@@ -70,6 +67,8 @@ func TestDeleteCompany(t *testing.T) {
 }
 
 func TestDeleteNonExistingCompany(t *testing.T) {
+	assert.NoError(t, unittest.PrepareTestDatabase())
+
 	err := DeleteCompany("Test Company")
 
 	if assert.Error(t, err) {
@@ -78,6 +77,8 @@ func TestDeleteNonExistingCompany(t *testing.T) {
 }
 
 func TestUpdateCompany(t *testing.T) {
+	assert.NoError(t, unittest.PrepareTestDatabase())
+
 	err := CreateCompany("Test Company", "https://www.testcompany.com/careers")
 
 	assert.NoError(t, err)
@@ -99,6 +100,8 @@ func TestUpdateCompany(t *testing.T) {
 }
 
 func TestUpdateNonExistingCompany(t *testing.T) {
+	assert.NoError(t, unittest.PrepareTestDatabase())
+
 	err := UpdateCompany("Test Company", "https://www.testcompany.com/jobs")
 
 	if assert.Error(t, err) {

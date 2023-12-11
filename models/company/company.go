@@ -53,7 +53,7 @@ func (e ErrCompanyInvalidURL) Unwrap() error {
 
 func NewCompany(db *gorm.DB, c *Company) error {
 	// Check if company already exists
-	res := db.Limit(1).Where("name = ?", "Test Company").Find(&Company{})
+	res := db.Limit(1).Where("name = ?", c.Name).Find(&Company{})
 	if res.Error != nil {
 		return res.Error
 	}
@@ -74,7 +74,19 @@ func NewCompany(db *gorm.DB, c *Company) error {
 }
 
 func DeleteCompany(db *gorm.DB, name string) error {
-	res := db.Where("name = ?", name).Delete(&Company{})
+	// Check if company already exists
+	res := db.Limit(1).Where("name = ?", name).Find(&Company{})
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	// If company already exists, return error
+	if res.RowsAffected == 0 {
+		return ErrCompanyNotFound{Name: name}
+	}
+
+	res = db.Where("name = ?", name).Delete(&Company{})
 
 	if res.Error != nil {
 		return res.Error
@@ -88,7 +100,19 @@ func DeleteCompany(db *gorm.DB, name string) error {
 }
 
 func UpdateCompany(db *gorm.DB, c *Company) (*Company, error) {
-	res := db.Where("name = ?", c.Name).Updates(&c)
+	// Check if company already exists
+	res := db.Limit(1).Where("name = ?", c.Name).Find(&Company{})
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	// If company already exists, return error
+	if res.RowsAffected == 0 {
+		return nil, ErrCompanyNotFound{Name: c.Name}
+	}
+
+	res = db.Where("name = ?", c.Name).Updates(&c)
 
 	if res.Error != nil {
 		return nil, res.Error

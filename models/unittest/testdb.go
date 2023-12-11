@@ -7,9 +7,12 @@ import (
 	"testing"
 
 	"github.com/Tiburso/GoManager/models/db"
+	"github.com/go-testfixtures/testfixtures/v3"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+var fixtures *testfixtures.Loader
 
 func fatalTestError(fmtStr string, args ...any) {
 	_, _ = fmt.Fprintf(os.Stderr, fmtStr, args...)
@@ -38,8 +41,6 @@ func MainTest(m *testing.M) {
 
 	exitStatus := m.Run()
 
-	//TODO: Check how to do custom teardown
-
 	os.Exit(exitStatus)
 }
 
@@ -53,6 +54,47 @@ func CreateTestEngine() error {
 		return err
 	}
 
-	// Migrate the schema
+	dialect := db.DB.Dialector.Name()
+
+	if dialect != "sqlite" {
+		return fmt.Errorf("dialect is not sqlite: %s", dialect)
+	}
+
+	coreDB, err := db.DB.DB()
+
+	if err != nil {
+		return err
+	}
+
+	// Load fixtures
+	fixtures, err = testfixtures.New(
+		testfixtures.Database(coreDB),
+		testfixtures.Dialect(dialect),
+		testfixtures.DangerousSkipTestDatabaseCheck(),
+		testfixtures.Directory("../../models/fixtures"),
+	)
+
+	if err != nil {
+		return err
+	}
+
+	//TODO: Check if I need to migrate the schema
 	return db.AutoMigrate()
+}
+
+// LoadFixtures loads the fixtures from the fixtures directory
+func LoadFixtures() error {
+	if fixtures == nil {
+		return fmt.Errorf("fixtures not loaded")
+	}
+
+	return fixtures.Load()
+}
+
+func PrepareTestDatabase() error {
+	if err := LoadFixtures(); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,0 +1,6 @@
+- id: 1
+  name: "Application 1"
+  type: "internship"
+  status: "applied"
+  application_date: "2020-01-01"
+  company_name: "Company 1"

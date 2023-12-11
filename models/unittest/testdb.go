@@ -35,7 +35,9 @@ func MainTest(m *testing.M) {
 		panic("The tests should run in a Gitea repository, there should be a 'go.mod' in the root")
 	}
 
-	if err := CreateTestEngine(); err != nil {
+	fixturePath := filepath.Join(searchDir, "models", "fixtures")
+
+	if err := CreateTestEngine(fixturePath); err != nil {
 		fatalTestError("Error creating test engine: %v\n", err)
 	}
 
@@ -46,7 +48,7 @@ func MainTest(m *testing.M) {
 
 // Create Test Engine creates a new sqlite3 in-memory database for testing
 // using gorm.Open("sqlite3", ":memory:")
-func CreateTestEngine() error {
+func CreateTestEngine(fixturePath string) error {
 	var err error
 	db.DB, err = gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 
@@ -71,7 +73,7 @@ func CreateTestEngine() error {
 		testfixtures.Database(coreDB),
 		testfixtures.Dialect(dialect),
 		testfixtures.DangerousSkipTestDatabaseCheck(),
-		testfixtures.Directory("../../models/fixtures"),
+		testfixtures.Directory(fixturePath),
 	)
 
 	if err != nil {

@@ -40,7 +40,7 @@ func CreateApplication(name string, applicationType string, applicationDate stri
 
 	// Check if the application type is valid
 	if !IsValidType(applicationType) {
-		return fmt.Errorf("'%s' is not a valid application type", applicationType)
+		return application_model.ErrInvalidApplicationType{Type: applicationType}
 	}
 
 	// Check if the company exists

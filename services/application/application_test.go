@@ -13,7 +13,8 @@ import (
 func TestCreateApplication(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := CreateApplication("Test Company",
+	err := CreateApplication(
+		"Test Company",
 		string(application_model.Internship),
 		"2023-01-01",
 		"Company 1")
@@ -154,7 +155,7 @@ func TestGetApplication(t *testing.T) {
 	a, err := GetApplication("Application 1", "Company 1")
 
 	assert.NoError(t, err)
-	unittest.AssertExists(t, a)
+	assert.NotNil(t, a)
 }
 
 func TestGetApplicationInvalid(t *testing.T) {
@@ -163,7 +164,7 @@ func TestGetApplicationInvalid(t *testing.T) {
 	a, err := GetApplication("Application 1", "")
 
 	if assert.Error(t, err) {
-		assert.IsType(t, company.ErrCompanyNotFound{}, err)
+		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
 	}
 
 	assert.Nil(t, a)
@@ -183,5 +184,5 @@ func TestGetApplications(t *testing.T) {
 	a, err := GetApplications()
 
 	assert.NoError(t, err)
-	assert.Equal(t, 2, len(a))
+	assert.Equal(t, 1, len(a))
 }

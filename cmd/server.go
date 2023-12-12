@@ -42,6 +42,7 @@ var ServerCommand *cli.Command = &cli.Command{
 					Usage:       "server port",
 					Required:    false,
 					DefaultText: "8080",
+					Value:       "8080",
 				},
 			},
 		},

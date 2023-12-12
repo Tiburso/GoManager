@@ -45,6 +45,13 @@ func PrintApplications(response *http.Response) error {
 	return nil
 }
 
+func printSeparator(size int) {
+	for i := 0; i < size; i++ {
+		fmt.Print("-")
+	}
+	fmt.Println()
+}
+
 func PrintCompanies(response *http.Response) error {
 	companies := []structs.Company{}
 
@@ -55,11 +62,50 @@ func PrintCompanies(response *http.Response) error {
 		return err
 	}
 
-	// print companies
-	fmt.Println("Name CandidatePortal")
+	// get max string length for the name
+	// and for the candidate portal
+	maxNameLength := 0
+	maxCandidatePortalLength := 0
+
 	for _, company := range companies {
-		fmt.Print(company.Name + " ")
-		fmt.Println(company.CandidatePortal)
+		if len(company.Name) > maxNameLength {
+			maxNameLength = len(company.Name)
+		}
+
+		if len(company.CandidatePortal) > maxCandidatePortalLength {
+			maxCandidatePortalLength = len(company.CandidatePortal)
+		}
+	}
+
+	// print header
+	fmt.Print("| Name ")
+	for i := 0; i < maxNameLength-len("Name"); i++ {
+		fmt.Print(" ")
+	}
+	fmt.Print("| CandidatePortal")
+	for i := 0; i < maxCandidatePortalLength-len("CandidatePortal"); i++ {
+		fmt.Print(" ")
+	}
+
+	fmt.Println(" |")
+
+	// print separator
+	printSeparator(maxNameLength + maxCandidatePortalLength + 7)
+
+	// print companies
+	for _, company := range companies {
+		fmt.Print("| " + company.Name + " ")
+		for i := 0; i < maxNameLength-len(company.Name); i++ {
+			fmt.Print(" ")
+		}
+		fmt.Print("| " + company.CandidatePortal)
+		for i := 0; i < maxCandidatePortalLength-len(company.CandidatePortal); i++ {
+			fmt.Print(" ")
+		}
+		fmt.Println(" |")
+
+		// 3 is the extra space being printed between the columns
+		printSeparator(maxNameLength + maxCandidatePortalLength + 7)
 	}
 
 	defer response.Body.Close()
@@ -76,11 +122,6 @@ func PrintCompany(response *http.Response) error {
 	if err != nil {
 		return err
 	}
-
-	// print company
-	fmt.Println("Name CandidatePortal")
-	fmt.Print(company.Name + " ")
-	fmt.Println(company.CandidatePortal)
 
 	for _, application := range company.Applications {
 		fmt.Print(application.Name + " ")

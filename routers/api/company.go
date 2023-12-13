@@ -50,11 +50,9 @@ func GetCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	companiesApi := convert.ToCompanies(companies)
-
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(companiesApi)
+	json.NewEncoder(w).Encode(convert.ToCompanies(companies))
 }
 
 func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
@@ -72,11 +70,9 @@ func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	companyWithApplication := convert.ToCompanyWithApplications(company)
-
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(companyWithApplication)
+	json.NewEncoder(w).Encode(convert.ToCompanyWithApplications(company))
 }
 
 func EditCompanyHandler(w http.ResponseWriter, r *http.Request) {

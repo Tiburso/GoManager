@@ -56,25 +56,11 @@ func CreateApplication(name string, applicationType string, applicationDate stri
 		CompanyName:     companyName,
 	}
 
-	err = application_model.NewApplication(db, a)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return application_model.NewApplication(db, a)
 }
 
 func DeleteApplication(name string, companyName string) error {
-	db := db.DB
-
-	err := application_model.DeleteApplication(db, name, companyName)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return application_model.DeleteApplication(db.DB, name, companyName)
 }
 
 func UpdateApplication(name, applicationType, applicationDate, applicationStatus, companyName string) error {
@@ -110,35 +96,13 @@ func UpdateApplication(name, applicationType, applicationDate, applicationStatus
 		application.Status = application_model.Status(applicationStatus)
 	}
 
-	err = application_model.UpdateApplication(db, application)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return application_model.UpdateApplication(db, application)
 }
 
 func GetApplication(name string, companyName string) (*application_model.Application, error) {
-	db := db.DB
-
-	app, err := application_model.GetApplication(db, name, companyName)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return app, nil
+	return application_model.GetApplication(db.DB, name, companyName)
 }
 
 func GetApplications() ([]*application_model.Application, error) {
-	db := db.DB
-
-	apps, err := application_model.GetApplications(db)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return apps, nil
+	return application_model.GetApplications(db.DB)
 }

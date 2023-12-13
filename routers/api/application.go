@@ -125,10 +125,7 @@ func GetApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// convert the applications to struct
-	apps := convert.ToApplicationCreations(applications)
-
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(apps)
+	json.NewEncoder(w).Encode(convert.ToApplicationCreations(applications))
 }

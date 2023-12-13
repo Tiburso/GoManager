@@ -83,8 +83,8 @@ type Application struct {
 	Status          Status
 	ApplicationDate time.Time
 
-	CompanyName string `gorm:"primaryKey"`
-	Company     *company.Company
+	CompanyName string           `gorm:"primaryKey"`
+	Company     *company.Company `gorm:"foreignKey:CompanyName;references:Name"`
 }
 
 func NewApplication(db *gorm.DB, app *Application) error {

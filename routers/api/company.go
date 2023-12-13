@@ -6,6 +6,7 @@ import (
 
 	"github.com/Tiburso/GoManager/common/structs"
 	company_service "github.com/Tiburso/GoManager/services/company"
+	"github.com/Tiburso/GoManager/services/convert"
 )
 
 func CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,9 +50,11 @@ func GetCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	companiesApi := convert.ToCompanies(companies)
+
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(companies)
+	json.NewEncoder(w).Encode(companiesApi)
 }
 
 func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,9 +72,11 @@ func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	companyWithApplication := convert.ToCompanyWithApplications(company)
+
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(company)
+	json.NewEncoder(w).Encode(companyWithApplication)
 }
 
 func EditCompanyHandler(w http.ResponseWriter, r *http.Request) {

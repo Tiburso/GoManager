@@ -6,6 +6,7 @@ import (
 
 	"github.com/Tiburso/GoManager/common/structs"
 	"github.com/Tiburso/GoManager/services/application"
+	"github.com/Tiburso/GoManager/services/convert"
 )
 
 func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
@@ -124,7 +125,10 @@ func GetApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert the applications to struct
+	apps := convert.ToApplicationCreations(applications)
+
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(applications)
+	json.NewEncoder(w).Encode(apps)
 }

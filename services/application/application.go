@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Tiburso/GoManager/common/structs"
 	application_model "github.com/Tiburso/GoManager/models/application"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
-	"github.com/Tiburso/GoManager/services/convert"
 )
 
 func IsValidType(t string) bool {
@@ -44,7 +42,7 @@ func CreateApplication(name string, applicationType string, applicationDate stri
 	}
 
 	// Check if the company exists
-	company, err := company_model.GetCompany(db, companyName)
+	_, err = company_model.GetCompany(db, companyName)
 
 	if err != nil {
 		return err
@@ -55,7 +53,8 @@ func CreateApplication(name string, applicationType string, applicationDate stri
 		Type:            application_model.Type(applicationType),
 		ApplicationDate: date,
 		Status:          application_model.Applied,
-		Company:         company,
+		CompanyName:     companyName,
+		// Company:         company,
 	}
 
 	err = application_model.NewApplication(db, a)
@@ -121,7 +120,7 @@ func UpdateApplication(name, applicationType, applicationDate, applicationStatus
 	return nil
 }
 
-func GetApplication(name string, companyName string) (*structs.Application, error) {
+func GetApplication(name string, companyName string) (*application_model.Application, error) {
 	db := db.DB
 
 	app, err := application_model.GetApplication(db, name, companyName)
@@ -130,10 +129,10 @@ func GetApplication(name string, companyName string) (*structs.Application, erro
 		return nil, err
 	}
 
-	return convert.ToApplication(app), nil
+	return app, nil
 }
 
-func GetApplications() ([]*structs.Application, error) {
+func GetApplications() ([]*application_model.Application, error) {
 	db := db.DB
 
 	apps, err := application_model.GetApplications(db)
@@ -142,5 +141,5 @@ func GetApplications() ([]*structs.Application, error) {
 		return nil, err
 	}
 
-	return convert.ToApplications(apps), nil
+	return apps, nil
 }

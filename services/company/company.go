@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/Tiburso/GoManager/common/structs"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
-	"github.com/Tiburso/GoManager/services/convert"
 )
 
 func isValidURL(url string) bool {
@@ -88,7 +86,7 @@ func UpdateCompany(name, candidatePortal string) error {
 	return nil
 }
 
-func GetCompanyWithApplications(name string) (*structs.CompanyWithApplications, error) {
+func GetCompanyWithApplications(name string) (*company_model.Company, error) {
 	db := db.DB
 
 	company, err := company_model.GetCompany(db, name)
@@ -97,10 +95,10 @@ func GetCompanyWithApplications(name string) (*structs.CompanyWithApplications, 
 		return nil, err
 	}
 
-	return convert.ToCompanyWithApplications(company), nil
+	return company, nil
 }
 
-func GetCompanies() ([]*structs.Company, error) {
+func GetCompanies() ([]*company_model.Company, error) {
 	db := db.DB
 
 	companies, err := company_model.GetCompanies(db)
@@ -109,5 +107,5 @@ func GetCompanies() ([]*structs.Company, error) {
 		return nil, err
 	}
 
-	return convert.ToCompanies(companies), nil
+	return companies, nil
 }

@@ -50,16 +50,12 @@ func TestNewInvalidURLCompany(t *testing.T) {
 func TestDeleteCompany(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := CreateCompany("Test Company", "https://www.testcompany.com/careers")
-
-	assert.NoError(t, err)
-
-	c, err := company_model.GetCompany(db.DB, "Test Company")
+	c, err := company_model.GetCompany(db.DB, "Company 1")
 
 	assert.NoError(t, err)
 	unittest.AssertExists(t, c)
 
-	err = DeleteCompany("Test Company")
+	err = DeleteCompany("Company 1")
 
 	assert.NoError(t, err)
 
@@ -79,20 +75,16 @@ func TestDeleteNonExistingCompany(t *testing.T) {
 func TestUpdateCompany(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := CreateCompany("Test Company", "https://www.testcompany.com/careers")
-
-	assert.NoError(t, err)
-
-	c, err := company_model.GetCompany(db.DB, "Test Company")
+	c, err := company_model.GetCompany(db.DB, "Company 1")
 
 	assert.NoError(t, err)
 	unittest.AssertExists(t, c)
 
-	err = UpdateCompany("Test Company", "https://www.testcompany.com/jobs")
+	err = UpdateCompany("Company 1", "https://www.testcompany.com/jobs")
 
 	assert.NoError(t, err)
 
-	c, err = company_model.GetCompany(db.DB, "Test Company")
+	c, err = company_model.GetCompany(db.DB, "Company 1")
 
 	assert.NoError(t, err)
 
@@ -107,4 +99,22 @@ func TestUpdateNonExistingCompany(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.IsType(t, company_model.ErrCompanyNotFound{}, err)
 	}
+}
+
+func TestGetCompany(t *testing.T) {
+	assert.NoError(t, unittest.PrepareTestDatabase())
+
+	c, err := GetCompanyWithApplications("Company 1")
+
+	assert.NoError(t, err)
+	unittest.AssertExists(t, c)
+}
+
+func TestGetCompanies(t *testing.T) {
+	assert.NoError(t, unittest.PrepareTestDatabase())
+
+	companies, err := GetCompanies()
+
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(companies))
 }

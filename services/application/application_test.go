@@ -14,23 +14,25 @@ func TestCreateApplication(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
 	err := CreateApplication(
-		"Test Company",
+		"Application 2",
 		string(application_model.Internship),
 		"2023-01-01",
 		"Company 1")
 
 	assert.NoError(t, err)
 
-	a, err := application_model.GetApplication(db.DB, "Test Company", "Company 1")
+	a, err := application_model.GetApplication(db.DB, "Application 2", "Company 1")
 
 	assert.NoError(t, err)
+	assert.NotNil(t, a)
 	unittest.AssertExists(t, a)
 }
 
 func TestCreateDuplicateApplication(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := CreateApplication("Application 1",
+	err := CreateApplication(
+		"Application 1",
 		string(application_model.Internship),
 		"2023-01-01",
 		"Company 1")
@@ -50,19 +52,6 @@ func TestCreateApplicationWithInvalidType(t *testing.T) {
 
 	if assert.Error(t, err) {
 		assert.IsType(t, application_model.ErrInvalidApplicationType{}, err)
-	}
-}
-
-func TestCreateApplicationWithInvalidStatus(t *testing.T) {
-	assert.NoError(t, unittest.PrepareTestDatabase())
-
-	err := CreateApplication("Test Company",
-		string(application_model.Internship),
-		"2023-01-01",
-		"invalid status")
-
-	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrInvalidApplicationStatus{}, err)
 	}
 }
 
@@ -88,8 +77,10 @@ func TestDeleteApplication(t *testing.T) {
 
 	a, err := application_model.GetApplication(db.DB, "Application 1", "Company 1")
 
-	assert.NoError(t, err)
-	unittest.AssertNotExists(t, a)
+	if assert.Error(t, err) {
+		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
+	}
+	assert.Nil(t, a)
 }
 
 func TestDeleteApplicationInvalid(t *testing.T) {
@@ -128,14 +119,15 @@ func TestUpdateApplication(t *testing.T) {
 func TestUpdateApplicationInvalid(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := UpdateApplication("Application 1",
+	err := UpdateApplication(
+		"Application 1",
 		string(application_model.Internship),
 		"2023-01-01",
 		string(application_model.Applied),
 		"")
 
 	if assert.Error(t, err) {
-		assert.IsType(t, company.ErrCompanyNotFound{}, err)
+		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
 	}
 
 	err = UpdateApplication("Application 1",

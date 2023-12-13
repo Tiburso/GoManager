@@ -54,7 +54,6 @@ func CreateApplication(name string, applicationType string, applicationDate stri
 		ApplicationDate: date,
 		Status:          application_model.Applied,
 		CompanyName:     companyName,
-		// Company:         company,
 	}
 
 	err = application_model.NewApplication(db, a)

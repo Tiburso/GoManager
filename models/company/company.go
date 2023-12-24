@@ -8,8 +8,8 @@ import (
 )
 
 type Company struct {
-	*gorm.Model
-	Name            string `gorm:"primaryKey"`
+	gorm.Model
+	Name            string `gorm:"primaryKey;uniqueIndex;not null"`
 	CandidatePortal string
 }
 

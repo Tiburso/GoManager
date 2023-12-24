@@ -77,13 +77,13 @@ const (
 )
 
 type Application struct {
-	*gorm.Model
+	gorm.Model
 	Name            string `gorm:"primaryKey"`
 	Type            Type
 	Status          Status
 	ApplicationDate time.Time
 
-	CompanyName string           `gorm:"primaryKey"`
+	CompanyName string           `gorm:"primaryKey;unique"`
 	Company     *company.Company `gorm:"foreignKey:CompanyName;references:Name"`
 }
 

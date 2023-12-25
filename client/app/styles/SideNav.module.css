@@ -1,0 +1,31 @@
+.sidenav {
+  width: 200px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: var(--navbar-color);
+  padding: 20px;
+  color: #fff;
+}
+
+.sidenav a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 10px;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.sidenav a:hover {
+  background-color: var(--tertiary-rgb);
+  color: #ccc;
+}
+
+/* active sidenav link */
+.sidenav a.active {
+  background-color: var(--tertiary-rgb);
+  color: #ccc;
+}

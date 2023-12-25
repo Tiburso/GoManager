@@ -8,8 +8,8 @@
   --background-color: #ccc;
 
   --navbar-color: #160f29;
-  --background-end-rgb: #7c898b;
-  --background-start-rgb: #93a3b1;
+  --primary-rgb: #7c898b;
+  --secondary-rgb: #93a3b1;
   --tertiary-rgb: #def6ca;
 }
 
@@ -25,5 +25,6 @@
 
 body {
   color: var(--text-color);
-  background: linear-gradient(to bottom, transparent, var(--background-color));
+  background: linear-gradient(to bottom, transparent, var(--background-color))
+    transparent;
 }

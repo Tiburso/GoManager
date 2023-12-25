@@ -1,31 +1,44 @@
 .sidenav {
-  width: 200px;
+  width: 25vh;
   height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
   background-color: var(--navbar-color);
-  padding: 20px;
+  padding: 1em 0;
   color: #fff;
 }
 
 .sidenav a {
+  width: 100%;
   display: block;
   color: #fff;
   text-decoration: none;
-  margin-bottom: 10px;
   transition:
     color 0.3s ease,
     background-color 0.3s ease;
+  padding: 0.5em 1em;
+}
+
+.sidenav a span {
+  margin-left: 1em;
 }
 
 .sidenav a:hover {
-  background-color: var(--tertiary-rgb);
   color: #ccc;
 }
 
 /* active sidenav link */
 .sidenav a.active {
-  background-color: var(--tertiary-rgb);
+  font-weight: bold;
+  background-color: var(--primary-rgb);
   color: #ccc;
+}
+
+.sidenav a.active::before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  width: 0.5em;
+  background: #fff;
 }

@@ -20,21 +20,21 @@ export default function SideNav() {
     <div id="sidenav" className={styles.sidenav}>
       <Link href="/" className={clsx({ [styles.active]: pathname === '/' })}>
         <FontAwesomeIcon icon={faHome} />
-        Home
+        <span>Home</span>
       </Link>
       <Link
         href="/applications"
         className={clsx({ [styles.active]: pathname === '/applications' })}
       >
         <FontAwesomeIcon icon={faBriefcase} />
-        Applications
+        <span>Applications</span>
       </Link>
       <Link
         href="/companies"
         className={clsx({ [styles.active]: pathname === '/companies' })}
       >
         <FontAwesomeIcon icon={faBuilding} />
-        Companies
+        <span>Companies</span>
       </Link>
     </div>
   );

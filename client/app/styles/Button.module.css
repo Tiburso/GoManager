@@ -1,5 +1,6 @@
 /* make me a button css */
 .btn {
+  height: 100%;
   color: #fff;
   background-color: var(--secondary-rgb);
   border-radius: 2px;

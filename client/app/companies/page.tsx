@@ -32,8 +32,8 @@ export default function CompanyPage() {
   const companies = CompanyData;
 
   return (
-    <div className="w-4/5 mx-auto">
-      <div className={style.title}>
+    <div className="mx-auto">
+      <div className={`${style.title}`}>
         {/* add class names for tailwind bigger text and centered and bold */}
         <h1 className="text-3xl text-left font-bold">Your Companies</h1>
         <Button>

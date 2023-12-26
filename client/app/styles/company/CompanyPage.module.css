@@ -1,5 +1,7 @@
 .title {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 30px;
+  margin-top: -1em; /* this is to compensate for the extra top padding */
+  margin-bottom: 15px;
+  padding: 1em 0;
 }

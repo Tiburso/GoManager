@@ -38,6 +38,7 @@ const CompanyData: Company[] = [
 ];
 
 export default function CompanyCards() {
+  // Change this to a lib call to get the companies from the API
   const companies = CompanyData;
 
   return (

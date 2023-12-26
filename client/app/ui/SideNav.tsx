@@ -37,19 +37,21 @@ export default function SideNav() {
         <FontAwesomeIcon icon={faHome} />
         <span>Home</span>
       </Link>
-      <Link
-        href="/applications"
-        className={clsx({ [styles.active]: pathname === '/applications' })}
-      >
-        <FontAwesomeIcon icon={faBriefcase} />
-        <span>Applications</span>
-      </Link>
+
       <Link
         href="/companies"
         className={clsx({ [styles.active]: pathname === '/companies' })}
       >
         <FontAwesomeIcon icon={faBuilding} />
         <span>Companies</span>
+      </Link>
+
+      <Link
+        href="/applications"
+        className={clsx({ [styles.active]: pathname === '/applications' })}
+      >
+        <FontAwesomeIcon icon={faBriefcase} />
+        <span>Applications</span>
       </Link>
     </div>
   );

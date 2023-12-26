@@ -25,6 +25,21 @@ const CompanyData: Company[] = [
     name: 'Amazon',
     company_portal: 'https://www.amazon.com/',
   },
+  {
+    id: '4',
+    name: 'Apple',
+    company_portal: 'https://www.apple.com/',
+  },
+  {
+    id: '5',
+    name: 'Microsoft',
+    company_portal: 'https://www.microsoft.com/',
+  },
+  {
+    id: '6',
+    name: 'Netflix',
+    company_portal: 'https://www.netflix.com/',
+  },
 ];
 
 export default function CompanyPage() {

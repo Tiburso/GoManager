@@ -4,15 +4,20 @@ import { MouseEvent } from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+
 import style from '@/styles/Modal.module.css';
 
 import clsx from 'clsx';
 
 export default function Modal({
   onClose,
+  title,
   children,
 }: {
   onClose: () => void;
+  title: string;
   children: React.ReactNode;
 }) {
   const [mounted, setMounted] = useState(false);
@@ -43,8 +48,15 @@ export default function Modal({
   const modalContent = (
     <div className={clsx(style.modal, { [style.active]: mounted })}>
       <div ref={ref} className={style.wrapper}>
-        <div className="border-b border-gray-200 px-4 py-2">
-          <button onClick={handleCloseClick}>x</button>
+        <div className={style.title}>
+          <h3>{title}</h3>
+          <button onClick={handleCloseClick}>
+            <FontAwesomeIcon
+              icon={faTimes}
+              className="fa fa-clone mr-1 text-gray-500"
+              size="lg"
+            />
+          </button>
         </div>
         <div className="px-4 py-2">{children}</div>
       </div>

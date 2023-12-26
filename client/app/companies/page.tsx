@@ -5,7 +5,9 @@ import { useState } from 'react';
 import Searchbar from '@/ui/Searchbar';
 import Button from '@/ui/Button';
 import Modal from '@/ui/Modal';
+
 import CompanyCards from '@/ui/companies/CompanyCards';
+import CompanyForm from '@/ui/companies/CompanyForm';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -32,8 +34,8 @@ export default function CompanyPage() {
       {
         /* Modal should be a component that is only visible when showModal is true */
         showModal && (
-          <Modal onClose={() => setShowModal(false)}>
-            <h1>Modal</h1>
+          <Modal title="Add Company" onClose={() => setShowModal(false)}>
+            <CompanyForm />
           </Modal>
         )
       }

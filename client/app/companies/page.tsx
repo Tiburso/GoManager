@@ -2,15 +2,15 @@
 
 import { useState } from 'react';
 
-import Searchbar from '@/app/ui/Searchbar';
-import Button from '@/app/ui/Button';
-import Modal from '@/app/ui/Modal';
-import CompanyCards from '@/app/ui/companies/CompanyCards';
+import Searchbar from '@/ui/Searchbar';
+import Button from '@/ui/Button';
+import Modal from '@/ui/Modal';
+import CompanyCards from '@/ui/companies/CompanyCards';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import style from '@/app/styles/company/CompanyPage.module.css';
+import style from '@/styles/company/CompanyPage.module.css';
 
 export default function CompanyPage() {
   const [showModal, setShowModal] = useState(false);

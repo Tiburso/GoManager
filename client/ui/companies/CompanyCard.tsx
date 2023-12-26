@@ -1,6 +1,6 @@
-import { Company } from '@/app/lib/types';
+import { Company } from '@/lib/types';
 
-import style from '@/app/styles//company/CompanyCard.module.css';
+import style from '@/styles//company/CompanyCard.module.css';
 
 export default function CompanyCard({ company }: { company: Company }) {
   // TODO: change this from tailwind to regular CSS

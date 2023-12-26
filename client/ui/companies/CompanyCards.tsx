@@ -1,8 +1,8 @@
 import CompanyCard from './CompanyCard';
 
-import style from '@/app/styles/company/CompanyCards.module.css';
+import style from '@/styles/company/CompanyCards.module.css';
 
-import { Company } from '@/app/lib/types';
+import { Company } from '@/lib/types';
 
 const CompanyData: Company[] = [
   {

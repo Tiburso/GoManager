@@ -4,7 +4,7 @@ import { MouseEvent } from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 
-import style from '@/app/styles/Modal.module.css';
+import style from '@/styles/Modal.module.css';
 
 import clsx from 'clsx';
 
@@ -32,9 +32,8 @@ export default function Modal({
     [onClose],
   );
 
-  useEffect(() => setMounted(true), []);
-
   useEffect(() => {
+    setMounted(true);
     document.addEventListener('click', handleOutsideClick, true);
     return () => {
       document.removeEventListener('click', handleOutsideClick, true);
@@ -45,9 +44,7 @@ export default function Modal({
     <div className={clsx(style.modal, { [style.active]: mounted })}>
       <div ref={ref} className={style.wrapper}>
         <div className="border-b border-gray-200 px-4 py-2">
-          <a href="#" onClick={handleCloseClick}>
-            x
-          </a>
+          <button onClick={handleCloseClick}>x</button>
         </div>
         <div className="px-4 py-2">{children}</div>
       </div>

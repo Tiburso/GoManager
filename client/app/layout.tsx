@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Kanit } from 'next/font/google';
 import './globals.css';
 
-import SideNav from './ui/SideNav';
+import SideNav from '../ui/SideNav';
 
 // Check which fonts I should use for the application
 const font = Kanit({ weight: '300', subsets: ['latin'], preload: true });

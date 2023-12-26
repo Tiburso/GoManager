@@ -1,4 +1,4 @@
-import style from '@/app/styles/Searchbar.module.css';
+import style from '@/styles/Searchbar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 

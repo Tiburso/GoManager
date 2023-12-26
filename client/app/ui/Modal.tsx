@@ -14,8 +14,6 @@ export default function Modal({
   const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setMounted(true), []);
-
   const handleCloseClick = (e: MouseEvent) => {
     e.preventDefault();
     onClose();
@@ -29,6 +27,8 @@ export default function Modal({
     },
     [onClose],
   );
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     document.addEventListener('click', handleOutsideClick, true);

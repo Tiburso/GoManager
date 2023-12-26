@@ -4,6 +4,10 @@ import { MouseEvent } from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 
+import style from '@/app/styles/Modal.module.css';
+
+import clsx from 'clsx';
+
 export default function Modal({
   onClose,
   children,
@@ -38,7 +42,7 @@ export default function Modal({
   }, [handleOutsideClick]);
 
   const modalContent = (
-    <div className="fixed top-0 left-0 z-[1040] bg-black w-screen h-screen opacity-50 transition-all duration-300 ease-in-out">
+    <div className={clsx(style.modal, { [style.active]: mounted })}>
       <div ref={ref}>
         <div className="mx-auto my-10 max-w-md w-full bg-white rounded-xl shadow-md">
           <div className="border-b border-gray-200 px-4 py-2">
@@ -52,5 +56,5 @@ export default function Modal({
     </div>
   );
 
-  return mounted ? ReactDOM.createPortal(modalContent, document.body) : null;
+  return ReactDOM.createPortal(modalContent, document.body);
 }

@@ -18,9 +18,8 @@ export default function CompanyPage() {
   return (
     <div className="w-4/5 mx-auto">
       <div className={`${style.title}`}>
-        {/* add class names for tailwind bigger text and centered and bold */}
         <h1 className="text-4xl text-left font-bold">Your Companies</h1>
-        {/* onClick button should enable a modal to add a company */}
+
         <Button
           onClick={() => {
             setShowModal(true);

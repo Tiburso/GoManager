@@ -4,6 +4,9 @@ import CompanyCard from '@/app/ui/companies/CompanyCard';
 
 import { Company } from '@/app/lib/types';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+
 import style from '@/app/styles//company/CompanyPage.module.css';
 
 const CompanyData: Company[] = [
@@ -32,8 +35,11 @@ export default function CompanyPage() {
     <div className="w-4/5 mx-auto">
       <div className={style.title}>
         {/* add class names for tailwind bigger text and centered and bold */}
-        <h1 className="text-3xl text-left font-bold">Companies</h1>
-        <Button>Add Company</Button>
+        <h1 className="text-3xl text-left font-bold">Your Companies</h1>
+        <Button>
+          <FontAwesomeIcon icon={faPlus} className="fa fa-clone fa-xs mr-1" />
+          Add company
+        </Button>
       </div>
       <Searchbar type="text" placeholder="Search for company" />
 

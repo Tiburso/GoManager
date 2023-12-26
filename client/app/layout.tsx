@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Kanit } from 'next/font/google';
 import './globals.css';
 
 import SideNav from './ui/SideNav';
 
 // Check which fonts I should use for the application
-const inter = Inter({ subsets: ['latin'] });
+const font = Kanit({ weight: '400', subsets: ['latin'], preload: true });
 
 export const metadata: Metadata = {
   applicationName: 'GoManager',
@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${font.className} antialiased`}>
         <SideNav />
         {children}
       </body>

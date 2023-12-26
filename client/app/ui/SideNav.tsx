@@ -1,5 +1,10 @@
 'use client';
 
+// FontAwesome
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+config.autoAddCss = false;
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHome,
@@ -9,6 +14,7 @@ import {
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import clsx from 'clsx';
 import styles from '../styles/SideNav.module.css';
@@ -18,6 +24,15 @@ export default function SideNav() {
 
   return (
     <div id="sidenav" className={styles.sidenav}>
+      {/* add application icon this can be a temporary one from fontawesome */}
+      <Image
+        src="/logo_transparent.png"
+        width={200}
+        height={200}
+        className="hidden md:block"
+        alt="logo"
+      />
+
       <Link href="/" className={clsx({ [styles.active]: pathname === '/' })}>
         <FontAwesomeIcon icon={faHome} />
         <span>Home</span>

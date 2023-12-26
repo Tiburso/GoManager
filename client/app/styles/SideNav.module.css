@@ -17,7 +17,7 @@
   transition:
     color 0.3s ease,
     background-color 0.3s ease;
-  padding: 0.5em 1em;
+  padding: 0.8em 1em;
 }
 
 .sidenav a span {

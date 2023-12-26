@@ -1,17 +1,26 @@
-/* fixed top-0 left-0 z-[1040] bg-black w-screen h-screen opacity-50 transition-all duration-300 ease-in-out */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1040;
   background-color: rgba(0, 0, 0, 0.5);
   width: 100vw;
   height: 100vh;
-  opacity: 20%;
+  opacity: 10%;
   transition: all 0.3s ease-in-out;
 }
 
 .modal.active {
   opacity: 100%;
   transform: none;
+}
+
+/* "mx-auto my-10 max-w-md w-full bg-white rounded-xl shadow-md" */
+.modal .wrapper {
+  margin: 10% auto;
+  max-width: 500px;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 0.2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  padding: 1rem;
 }

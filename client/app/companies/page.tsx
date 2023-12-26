@@ -1,7 +1,10 @@
 import Searchbar from '@/app/ui/Searchbar';
+import Button from '@/app/ui/Button';
 import CompanyCard from '@/app/ui/companies/CompanyCard';
 
 import { Company } from '@/app/lib/types';
+
+import style from '@/app/styles//company/CompanyPage.module.css';
 
 const CompanyData: Company[] = [
   {
@@ -26,15 +29,18 @@ export default function CompanyPage() {
   const companies = CompanyData;
 
   return (
-    <div>
-      <h1>Your Companies</h1>
-      <Searchbar />
-      <div>
-        <div className="companiesList">
-          {companies.map((company: Company) => (
-            <CompanyCard key={company.id} company={company} />
-          ))}
-        </div>
+    <div className="w-4/5 mx-auto">
+      <div className={style.title}>
+        {/* add class names for tailwind bigger text and centered and bold */}
+        <h1 className="text-3xl text-left font-bold">Companies</h1>
+        <Button>Add Company</Button>
+      </div>
+      <Searchbar type="text" placeholder="Search for company" />
+
+      <div className="companiesList">
+        {companies.map((company: Company) => (
+          <CompanyCard key={company.id} company={company} />
+        ))}
       </div>
     </div>
   );

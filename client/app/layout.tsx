@@ -5,7 +5,7 @@ import './globals.css';
 import SideNav from './ui/SideNav';
 
 // Check which fonts I should use for the application
-const font = Kanit({ weight: '400', subsets: ['latin'], preload: true });
+const font = Kanit({ weight: '300', subsets: ['latin'], preload: true });
 
 export const metadata: Metadata = {
   applicationName: 'GoManager',

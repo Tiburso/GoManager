@@ -7,6 +7,7 @@
   background-color: var(--navbar-color);
   padding: 1em 0;
   color: #fff;
+  border-right: 1px solid var(--primary-rgb);
 }
 
 .sidenav a {

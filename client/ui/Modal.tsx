@@ -13,10 +13,13 @@ import clsx from 'clsx';
 
 export default function Modal({
   onClose,
+  onSave,
   title,
   children,
 }: {
   onClose: () => void;
+  onSave: () => void;
+  saveText: string;
   title: string;
   children: React.ReactNode;
 }) {
@@ -58,7 +61,8 @@ export default function Modal({
             />
           </button>
         </div>
-        <div className="px-4 py-2">{children}</div>
+        {/* body */}
+        <div>{children}</div>
       </div>
     </div>
   );

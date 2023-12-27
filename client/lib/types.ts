@@ -1,5 +1,5 @@
 export interface Company {
-  id: string;
+  id?: string;
   name: string;
   company_portal: string;
 }

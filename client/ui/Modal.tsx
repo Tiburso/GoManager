@@ -13,12 +13,10 @@ import clsx from 'clsx';
 
 export default function Modal({
   onClose,
-  onSave,
   title,
   children,
 }: {
   onClose: () => void;
-  onSave: () => void;
   saveText: string;
   title: string;
   children: React.ReactNode;

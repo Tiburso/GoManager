@@ -21,9 +21,14 @@ export default function CompanyForm({
     <div>
       <div className={style.form}>
         <label htmlFor="name">Name</label>
-        <input type="text" id="name" name="name" />
+        <input type="text" id="name" name="name" placeholder="Name" />
         <label htmlFor="candidate_portal">Candidate Portal</label>
-        <input type="text" id="candidate_portal" name="candidate_portal" />
+        <input
+          type="url"
+          id="candidate_portal"
+          name="candidate_portal"
+          placeholder="Candidate portal"
+        />
       </div>
       {/* buttons */}
       <div className={style.btns}>

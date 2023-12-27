@@ -59,8 +59,19 @@ export default function CompanyPage() {
 
   const onSave = (c: Company) => {
     // Here it should call the endpoint to save the company
+
+    // TEMPORARY: generate a new id for the company based on the returned id
+    // this would be done in the backend
+    c.id = (companies.length + 1).toString();
+
     setCompanies([...companies, c]);
     setShowModal(false);
+  };
+
+  const onDelete = (id: string) => {
+    // Here it should call the endpoint to delete the company
+
+    setCompanies(companies.filter((c) => c.id !== id));
   };
 
   useEffect(() => {

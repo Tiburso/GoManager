@@ -1,40 +1,36 @@
+import { addCompany } from '@/lib/companies';
 import Button from '@/ui/Button';
 
-import { useState } from 'react';
-
-import { Company } from '@/lib/types';
+import { useFormStatus, useFormState } from 'react-dom';
 
 import style from '@/styles/company/CompanyForm.module.css';
 
-export default function CompanyForm({
-  onClose,
-  onSave,
-}: {
-  onClose: () => void;
-  onSave: (e: any) => void;
-}) {
-  const [name, setName] = useState('');
-  const [candidatePortal, setCandidatePortal] = useState('');
+export default function CompanyForm({ onClose }: { onClose: () => void }) {
+  const { pending } = useFormStatus();
 
-  const handleCloseClick = (e: MouseEvent) => {
-    e.preventDefault();
-    onClose();
-  };
-
-  const handleSaveClick = (formData: FormData) => {
-    // validate the values of the name and candidate_portal
-    const c: Company = {
-      name,
-      company_portal: candidatePortal,
-    };
-
-    // pass the company values to the save function
-    onSave(c);
-  };
+  const [state, formAction] = useFormState(
+    async (previousState: any, formData: FormData) => {
+      try {
+        await addCompany(formData);
+        onClose();
+        return {
+          message: 'Company added',
+        };
+      } catch (error) {
+        console.error(error);
+        return {
+          message: 'Error adding company',
+        };
+      }
+    },
+    {
+      message: null as null | string,
+    },
+  );
 
   return (
     <div>
-      <form action={handleSaveClick}>
+      <form action={formAction}>
         <div className={style.form}>
           <label htmlFor="name">Name</label>
           <input
@@ -43,8 +39,6 @@ export default function CompanyForm({
             id="name"
             name="name"
             placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
           />
           <label htmlFor="candidate_portal">Candidate Portal</label>
           <input
@@ -53,16 +47,19 @@ export default function CompanyForm({
             id="candidate_portal"
             name="candidate_portal"
             placeholder="Candidate portal"
-            value={candidatePortal}
-            onChange={(e) => setCandidatePortal(e.target.value)}
           />
         </div>
-        {/* buttons */}
         <div className={style.btns}>
-          <Button className={style.cancel} onClick={handleCloseClick}>
+          <Button className={style.cancel} onClick={onClose}>
             Close
           </Button>
-          <Button>Add</Button>
+          <Button type="submit" disabled={pending}>
+            Add
+          </Button>
+          {/* it should be the state.message here that would be returned from the server actions this is only for screen readers*/}
+          <p aria-live="polite" className="sr-only" role="status">
+            {state?.message}
+          </p>
         </div>
       </form>
     </div>

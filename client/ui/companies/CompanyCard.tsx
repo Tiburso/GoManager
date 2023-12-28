@@ -8,7 +8,7 @@ export default function CompanyCard({ company }: { company: Company }) {
   return (
     <div className={style.card}>
       <h2>{company.name}</h2>
-      <p>{company.company_portal}</p>
+      <p>{company.candidate_portal}</p>
     </div>
   );
 }

@@ -53,5 +53,7 @@ export async function addCompany(formData: FormData) {
 
   CompanyData.push(company);
 
+  // Here would be a good idea to revalidate the tag and not the whole page
+  // need to do this when i actually implement the API cache
   revalidatePath('/companies');
 }

@@ -1,3 +1,4 @@
+import { Company } from '@/lib/types';
 import { addCompany } from '@/lib/companies';
 import Button from '@/ui/Button';
 
@@ -5,7 +6,13 @@ import { useFormStatus, useFormState } from 'react-dom';
 
 import style from '@/styles/company/CompanyForm.module.css';
 
-export default function CompanyForm({ onClose }: { onClose: () => void }) {
+export default function CompanyForm({
+  onClose,
+  company,
+}: {
+  onClose: () => void;
+  company?: Company;
+}) {
   const { pending } = useFormStatus();
 
   const [state, formAction] = useFormState(
@@ -39,6 +46,7 @@ export default function CompanyForm({ onClose }: { onClose: () => void }) {
             id="name"
             name="name"
             placeholder="Name"
+            value={company?.name}
           />
           <label htmlFor="candidate_portal">Candidate Portal</label>
           <input
@@ -47,6 +55,7 @@ export default function CompanyForm({ onClose }: { onClose: () => void }) {
             id="candidate_portal"
             name="candidate_portal"
             placeholder="Candidate portal"
+            value={company?.candidate_portal}
           />
         </div>
         <div className={style.btns}>

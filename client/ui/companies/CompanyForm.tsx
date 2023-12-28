@@ -21,9 +21,8 @@ export default function CompanyForm({
     onClose();
   };
 
-  const handleSaveClick = (e: MouseEvent) => {
+  const handleSaveClick = (formData: FormData) => {
     // validate the values of the name and candidate_portal
-    e.preventDefault();
     const c: Company = {
       name,
       company_portal: candidatePortal,
@@ -35,33 +34,37 @@ export default function CompanyForm({
 
   return (
     <div>
-      <div className={style.form}>
-        <label htmlFor="name">Name</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <label htmlFor="candidate_portal">Candidate Portal</label>
-        <input
-          type="url"
-          id="candidate_portal"
-          name="candidate_portal"
-          placeholder="Candidate portal"
-          value={candidatePortal}
-          onChange={(e) => setCandidatePortal(e.target.value)}
-        />
-      </div>
-      {/* buttons */}
-      <div className={style.btns}>
-        <Button className={style.cancel} onClick={handleCloseClick}>
-          Close
-        </Button>
-        <Button onClick={handleSaveClick}>Add</Button>
-      </div>
+      <form action={handleSaveClick}>
+        <div className={style.form}>
+          <label htmlFor="name">Name</label>
+          <input
+            required
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <label htmlFor="candidate_portal">Candidate Portal</label>
+          <input
+            required
+            type="url"
+            id="candidate_portal"
+            name="candidate_portal"
+            placeholder="Candidate portal"
+            value={candidatePortal}
+            onChange={(e) => setCandidatePortal(e.target.value)}
+          />
+        </div>
+        {/* buttons */}
+        <div className={style.btns}>
+          <Button className={style.cancel} onClick={handleCloseClick}>
+            Close
+          </Button>
+          <Button>Add</Button>
+        </div>
+      </form>
     </div>
   );
 }

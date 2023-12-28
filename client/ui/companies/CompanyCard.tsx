@@ -30,15 +30,13 @@ export default function CompanyCard({ company }: { company: Company }) {
           <Button onClick={() => console.log('delete')}>Delete</Button>
 
           {/* this button should be a form hidden inputs */}
-          <Button onClick={() => setShowModal(true)}>Edit</Button>
+          <Button onClick={() => setShowModal(true)} type="submit">
+            Edit
+          </Button>
         </div>
       }
       {showModal && (
-        <Modal
-          onClose={() => setShowModal(false)}
-          title="Update company"
-          saveText="Update"
-        >
+        <Modal onClose={() => setShowModal(false)} title="Update company">
           <CompanyForm onClose={() => setShowModal(false)} company={company} />
         </Modal>
       )}

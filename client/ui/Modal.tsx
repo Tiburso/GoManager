@@ -17,7 +17,6 @@ export default function Modal({
   children,
 }: {
   onClose: () => void;
-  saveText: string;
   title: string;
   children: React.ReactNode;
 }) {

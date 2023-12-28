@@ -40,7 +40,7 @@ export default function Companies({ companies }: { companies: Company[] }) {
       {
         /* Modal should be a component that is only visible when showModal is true */
         showModal && (
-          <Modal title="Add Company" onClose={onClose} saveText="Submit">
+          <Modal title="Add Company" onClose={onClose}>
             <CompanyForm onClose={onClose} />
           </Modal>
         )

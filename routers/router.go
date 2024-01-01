@@ -38,29 +38,30 @@ func NewServer(port string) *ApiServer {
 	return srv
 }
 
+// Create a way to group routes together and add middleware
+// All routes will have a middleware that will transform the request into a custom API request
+
 func SetupRoutes(r *mux.Router) {
 	// define default prefix of /api/v1
 	g := r.PathPrefix("/api/v1").Subrouter()
 
 	// define health check endpoint
 	g.HandleFunc("/health", api.HealthCheckHandler).Methods("GET")
-
+	
 	// company endpoints
-	g.HandleFunc("/company", api.CreateCompanyHandler).Methods("POST")
-	g.HandleFunc("/company", api.GetCompanyWithApplicationsHandler).Methods("GET")
-	g.HandleFunc("/company", api.EditCompanyHandler).Methods("PUT")
-	g.HandleFunc("/company", api.DeleteCompanyHandler).Methods("DELETE")
-
-	// collection of companies
 	g.HandleFunc("/companies", api.GetCompaniesHandler).Methods("GET")
+	g.HandleFunc("/companies", api.CreateCompanyHandler).Methods("POST")
+	
+	g.HandleFunc("/companies/{id}", api.GetCompanyWithApplicationsHandler).Methods("GET")
+	g.HandleFunc("/companies/{id}", api.EditCompanyHandler).Methods("PUT")
+	g.HandleFunc("/companies/{id}", api.DeleteCompanyHandler).Methods("DELETE")
 
 	// application endpoints
-	g.HandleFunc("/application", api.CreateApplicationHandler).Methods("POST")
-	g.HandleFunc("/application", api.UpdateApplicationHandler).Methods("PUT")
-	g.HandleFunc("/application", api.DeleteApplicationHandler).Methods("DELETE")
+	g.HandleFunc("/companies/{company_id}/applications", api.CreateApplicationHandler).Methods("POST")
+	g.HandleFunc("/companies/{company_id}/applications", api.GetApplicationsHandler).Methods("GET")
+	g.HandleFunc("/companies/{company_id}/applications/{id}", api.UpdateApplicationHandler).Methods("PUT")
+	g.HandleFunc("/companies/{company_id}/applications/{id}", api.DeleteApplicationHandler).Methods("DELETE")
 
-	// collection of applications
-	g.HandleFunc("/applications", api.GetApplicationsHandler).Methods("GET")
 }
 
 func (s *ApiServer) WaitForShutdown() {

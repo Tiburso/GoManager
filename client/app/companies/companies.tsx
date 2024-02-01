@@ -24,7 +24,7 @@ export default function Companies({ companies }: { companies: Company[] }) {
   };
 
   return (
-    <div className="w-4/5 mx-auto">
+    <div className="w-9/10 mx-auto">
       <div className={`${style.title}`}>
         <h1 className="text-4xl text-left font-bold">Your Companies</h1>
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 
 import { Company } from '@/lib/types';
@@ -9,7 +11,7 @@ import Link from 'next/link';
 
 import style from '@/styles//company/CompanyCard.module.css';
 
-import { updateCompany } from '@/lib/companies';
+import { updateCompany, deleteCompany } from '@/lib/companies';
 
 export default function CompanyCard({ company }: { company: Company }) {
   const [showModal, setShowModal] = useState(false);
@@ -30,7 +32,10 @@ export default function CompanyCard({ company }: { company: Company }) {
       </Link>
 
       <div className={style.btns}>
-        <Button className={style.delete} onClick={() => console.log('delete')}>Delete</Button>
+        {/* create an empty form here with the action to delete */}
+        <form action={async () => await deleteCompany(company.id!)}>
+          <Button className={style.delete} type="submit">Delete</Button>
+        </form>
 
         <Button onClick={() => setShowModal(true)} type="submit">
           Edit

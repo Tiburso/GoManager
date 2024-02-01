@@ -1,37 +1,41 @@
+import { useState } from 'react';
+
 import { Company } from '@/lib/types';
-import { addCompany } from '@/lib/companies';
 import Button from '@/ui/Button';
 
 import { useFormStatus, useFormState } from 'react-dom';
 
 import style from '@/styles/company/CompanyForm.module.css';
 
+type message = null | string;
+type state = {
+  message: message;
+};
+
 export default function CompanyForm({
+  action,
   onClose,
   company,
 }: {
+  // action is a function that must return a message
+  action: (formData: FormData) => Promise<message>;
   onClose: () => void;
   company?: Company;
 }) {
   const { pending } = useFormStatus();
 
-  const [state, formAction] = useFormState(
-    async (previousState: any, formData: FormData) => {
-      try {
-        await addCompany(formData);
-        onClose();
-        return {
-          message: 'Company added',
-        };
-      } catch (error) {
-        console.error(error);
-        return {
-          message: 'Error adding company',
-        };
-      }
+  const [name, setName] = useState(company?.name);
+  const [candidate_portal, setCandidate_portal] = useState(company?.candidate_portal);
+
+  const [state, formAction] = useFormState<state, FormData>(
+    async (state: state, formData: FormData): Promise<state> => {
+      return {
+        message: await action(formData),
+      };
     },
+
     {
-      message: null as null | string,
+      message: null as message,
     },
   );
 
@@ -46,7 +50,8 @@ export default function CompanyForm({
             id="name"
             name="name"
             placeholder="Name"
-            value={company?.name}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
           <label htmlFor="candidate_portal">Candidate Portal</label>
           <input
@@ -55,7 +60,8 @@ export default function CompanyForm({
             id="candidate_portal"
             name="candidate_portal"
             placeholder="Candidate portal"
-            value={company?.candidate_portal}
+            value={candidate_portal}
+            onChange={(e) => setCandidate_portal(e.target.value)}
           />
         </div>
         <div className={style.btns}>

@@ -57,3 +57,30 @@ export async function addCompany(formData: FormData) {
   // need to do this when i actually implement the API cache
   revalidatePath('/companies');
 }
+
+export async function deleteCompany(id: string) {
+  const index = CompanyData.findIndex((company) => company.id === id);
+  if (index === -1) {
+    throw new Error('Company not found');
+  }
+  CompanyData.splice(index, 1);
+  revalidatePath('/companies');
+}
+
+export async function updateCompany(id: string, formData: FormData) {
+  const index = CompanyData.findIndex((company) => company.id === id);
+  if (index === -1) {
+    throw new Error('Company not found');
+  }
+
+  const name = formData.get('name') as string;
+  const candidate_portal = formData.get('candidate_portal') as string;
+
+  CompanyData[index] = {
+    id: id,
+    name: name,
+    candidate_portal: candidate_portal,
+  };
+
+  revalidatePath('/companies');
+}

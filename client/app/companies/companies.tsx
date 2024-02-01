@@ -16,6 +16,8 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import style from '@/styles/company/CompanyPage.module.css';
 
+import { addCompany } from '@/lib/companies';
+
 export default function Companies({ companies }: { companies: Company[] }) {
   const [showModal, setShowModal] = useState(false);
 
@@ -41,7 +43,18 @@ export default function Companies({ companies }: { companies: Company[] }) {
         /* Modal should be a component that is only visible when showModal is true */
         showModal && (
           <Modal title="Add Company" onClose={onClose}>
-            <CompanyForm onClose={onClose} />
+            <CompanyForm action={
+              async (formData: FormData) => {
+                try {
+                  await addCompany(formData);
+                  onClose();
+                  return 'Company added'
+                } catch (error) {
+                  console.error(error);
+                  return 'Error adding company'
+                }
+              }
+            } onClose={onClose} />
           </Modal>
         )
       }

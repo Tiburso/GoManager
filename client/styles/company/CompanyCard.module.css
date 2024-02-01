@@ -1,6 +1,6 @@
 .card {
   width: auto;
-  height: 100%;
+  aspect-ratio: 2 / 1;
   position: relative;
 
   display: flex;
@@ -39,18 +39,32 @@
 }
 
 .card .btns {
+  z-index: 1;
   opacity: 0;
-  display: none;
   position: absolute;
   width: 100%;
-  bottom: 0;
-}
-
-.card:hover .btns {
-  opacity: 1;
+  bottom: -10px;
   display: flex;
   justify-content: space-around;
   align-items: center;
+  border-radius: 3px;
+}
+
+.card:hover {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s ease-in-out;
+}
+
+.card:hover .btns {
+  bottom: 0;
+  transition: all 0.5s ease-in-out;
+  opacity: 1;
+}
+
+/* hide the h2 when the buttons are hovered */
+.card:hover p {
+  opacity: 0;
+  transition: all 0.5s ease-in-out;
 }
 
 .card .btns button {
@@ -60,4 +74,15 @@
   border-radius: 5px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.15);
   cursor: pointer;
+}
+
+.card .btns .delete {
+  /* tailwind 700 */
+  background-color: var(--delete-rgb);
+  color: #fff;
+}
+
+.card .btns .delete:hover {
+  /* tailwind 800 */
+  background-color: #e03131;
 }

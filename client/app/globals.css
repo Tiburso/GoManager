@@ -13,6 +13,8 @@
   --primary-rgb-light: #3c6e8f;
 
   --secondary-rgb: #adb6c4;
+
+  --delete-rgb: #e63946;
 }
 
 /* This is here to setup a dark mode for users  */

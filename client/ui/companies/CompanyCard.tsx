@@ -10,7 +10,6 @@ import Link from 'next/link';
 import style from '@/styles//company/CompanyCard.module.css';
 
 export default function CompanyCard({ company }: { company: Company }) {
-  const [showButtons, setShowButtons] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -27,7 +26,7 @@ export default function CompanyCard({ company }: { company: Company }) {
       {/* here i will have two buttons that will show up as i hover over the card */}
       {
         <div className={style.btns}>
-          <Button onClick={() => console.log('delete')}>Delete</Button>
+          <Button className={style.delete} onClick={() => console.log('delete')}>Delete</Button>
 
           {/* this button should be a form hidden inputs */}
           <Button onClick={() => setShowModal(true)} type="submit">

@@ -81,14 +81,14 @@ func TestUpdateApplication(t *testing.T) {
 
 	a, _ := company.GetApplication(db.DB, 1)
 
-	// Confirm the application has status != "Applied"
-	assert.NotEqual(t, company.Applied, a.Status)
+	// Confirm the application has status != "Accepted"
+	assert.NotEqual(t, company.Accepted, a.Status)
 
 	err := UpdateApplication(1,
 		"Application 1",
 		string(company.Internship),
 		"2023-01-01",
-		string(company.Applied))
+		string(company.Accepted))
 
 	assert.NoError(t, err)
 
@@ -96,7 +96,8 @@ func TestUpdateApplication(t *testing.T) {
 
 	assert.NoError(t, err)
 	unittest.AssertExists(t, a)
-	assert.Equal(t, company.Applied, a.Status)
+	assert.Equal(t, company.Accepted, a.Status)
+	assert.Equal(t, "2023-01-01", a.ApplicationDate.Format("2006-01-02"))
 }
 
 func TestUpdateApplicationInvalid(t *testing.T) {

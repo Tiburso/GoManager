@@ -114,7 +114,7 @@ func UpdateApplication(db *gorm.DB, a *Application) error {
 func GetApplication(db *gorm.DB, id uint) (*Application, error) {
 	var app Application
 
-	res := db.Preload("Company").First(&app, id)
+	res := db.Preload("Company").Limit(1).Where("id = ?", id).Find(&app)
 
 	if res.Error != nil {
 		return nil, res.Error

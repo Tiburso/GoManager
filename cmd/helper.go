@@ -36,8 +36,6 @@ func PrintApplications(response *http.Response) error {
 		fmt.Print(application.Type + " ")
 		fmt.Print(application.Status + " ")
 		fmt.Print(application.ApplicationDate + " ")
-		fmt.Print(application.Company.Name + " ")
-		fmt.Println(application.Company.CandidatePortal)
 	}
 
 	defer response.Body.Close()
@@ -114,7 +112,7 @@ func PrintCompanies(response *http.Response) error {
 }
 
 func PrintCompany(response *http.Response) error {
-	company := structs.CompanyWithApplications{}
+	company := structs.Company{}
 
 	// decode response
 	err := json.NewDecoder(response.Body).Decode(&company)

@@ -8,8 +8,8 @@ import (
 )
 
 type Company struct {
-	gorm.Model
-	Name            string `gorm:"primaryKey;uniqueIndex;not null"`
+	*gorm.Model
+	Name            string `gorm:"uniqueIndex"`
 	CandidatePortal string
 }
 
@@ -26,11 +26,11 @@ func (e ErrDuplicateCompany) Unwrap() error {
 }
 
 type ErrCompanyNotFound struct {
-	Name string
+	id uint
 }
 
 func (e ErrCompanyNotFound) Error() string {
-	return fmt.Sprintf("company with name %s does not exist", e.Name)
+	return fmt.Sprintf("company with id %d does not exist", e.id)
 }
 
 func (e ErrCompanyNotFound) Unwrap() error {
@@ -73,68 +73,45 @@ func NewCompany(db *gorm.DB, c *Company) error {
 	return nil
 }
 
-func DeleteCompany(db *gorm.DB, name string) error {
-	// Check if company already exists
-	res := db.Limit(1).Where("name = ?", name).Find(&Company{})
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	// If company already exists, return error
-	if res.RowsAffected == 0 {
-		return ErrCompanyNotFound{Name: name}
-	}
-
-	res = db.Where("name = ?", name).Delete(&Company{})
+func DeleteCompany(db *gorm.DB, id uint) error {
+	// Delete company
+	res := db.Delete(&Company{}, id)
 
 	if res.Error != nil {
 		return res.Error
 	}
 
 	if res.RowsAffected == 0 {
-		return nil
+		return ErrCompanyNotFound{id: id}
 	}
 
 	return nil
 }
 
 func UpdateCompany(db *gorm.DB, c *Company) (*Company, error) {
-	// Check if company already exists
-	res := db.Limit(1).Where("name = ?", c.Name).Find(&Company{})
-
-	if res.Error != nil {
-		return nil, res.Error
-	}
-
-	// If company already exists, return error
-	if res.RowsAffected == 0 {
-		return nil, ErrCompanyNotFound{Name: c.Name}
-	}
-
-	res = db.Where("name = ?", c.Name).Updates(&c)
+	res := db.Save(c)
 
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
 	if res.RowsAffected == 0 {
-		return nil, nil
+		return nil, ErrCompanyNotFound{id: c.ID}
 	}
 
 	return c, nil
 }
 
-func GetCompany(db *gorm.DB, name string) (*Company, error) {
+func GetCompany(db *gorm.DB, id uint) (*Company, error) {
 	var c Company
-	res := db.Where("name = ?", name).Find(&c)
+	res := db.Limit(1).Where("id = ?", id).Find(&c)
 
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
 	if res.RowsAffected == 0 {
-		return nil, ErrCompanyNotFound{Name: name}
+		return nil, ErrCompanyNotFound{id: id}
 	}
 
 	return &c, nil

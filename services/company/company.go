@@ -48,10 +48,10 @@ func CreateCompany(name, candidatePortal string) error {
 	return nil
 }
 
-func DeleteCompany(name string) error {
+func DeleteCompany(id uint) error {
 	db := db.DB
 
-	err := company_model.DeleteCompany(db, name)
+	err := company_model.DeleteCompany(db, id)
 
 	if err != nil {
 		return err
@@ -60,10 +60,10 @@ func DeleteCompany(name string) error {
 	return nil
 }
 
-func UpdateCompany(name, candidatePortal string) error {
+func UpdateCompany(id uint, candidatePortal string) error {
 	db := db.DB
 
-	company, err := company_model.GetCompany(db, name)
+	company, err := company_model.GetCompany(db, id)
 
 	if err != nil {
 		return err
@@ -86,10 +86,10 @@ func UpdateCompany(name, candidatePortal string) error {
 	return nil
 }
 
-func GetCompanyWithApplications(name string) (*company_model.Company, error) {
+func GetCompanyWithApplications(id uint) (*company_model.Company, error) {
 	db := db.DB
 
-	company, err := company_model.GetCompany(db, name)
+	company, err := company_model.GetCompany(db, id)
 
 	if err != nil {
 		return nil, err

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Tiburso/GoManager/common/structs"
-	"github.com/Tiburso/GoManager/services/application"
+	"github.com/Tiburso/GoManager/services/company"
 	"github.com/Tiburso/GoManager/services/convert"
 )
 
@@ -36,7 +36,7 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call the service
-	err := application.CreateApplication(name, application_type, application_date, company_name)
+	err := company.CreateApplication(name, application_type, application_date, company_name)
 
 	// TODO: need to check now if the error is duplicate app or missing company
 	// for now just return the error
@@ -66,7 +66,7 @@ func DeleteApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete the application from the db
-	err := application.DeleteApplication(name[0], company_name[0])
+	err := company.DeleteApplication(name[0], company_name[0])
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -96,7 +96,7 @@ func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call the service
-	err := application.UpdateApplication(
+	err := company.UpdateApplication(
 		application_struct.Name,
 		application_struct.Type,
 		application_struct.ApplicationDate,
@@ -117,7 +117,7 @@ func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 func GetApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	applications, err := application.GetApplications()
+	applications, err := company.GetApplications()
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

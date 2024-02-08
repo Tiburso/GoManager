@@ -1,10 +1,9 @@
-package application
+package company
 
 import (
 	"fmt"
 	"time"
 
-	application_model "github.com/Tiburso/GoManager/models/application"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
 )
@@ -27,7 +26,7 @@ func IsValidStatus(s string) bool {
 	return false
 }
 
-func CreateApplication(name string, applicationType string, applicationDate string, companyName string) error {
+func CreateApplication(name string, applicationType string, applicationDate string, companyId uint) error {
 	db := db.DB
 
 	// Application date must be a valid date
@@ -38,35 +37,35 @@ func CreateApplication(name string, applicationType string, applicationDate stri
 
 	// Check if the application type is valid
 	if !IsValidType(applicationType) {
-		return application_model.ErrInvalidApplicationType{Type: applicationType}
+		return company_model.ErrInvalidApplicationType{Type: applicationType}
 	}
 
 	// Check if the company exists
-	_, err = company_model.GetCompany(db, companyName)
+	company, err := company_model.GetCompany(db, companyId)
 
 	if err != nil {
 		return err
 	}
 
-	a := &application_model.Application{
+	a := &company_model.Application{
 		Name:            name,
-		Type:            application_model.Type(applicationType),
+		Type:            company_model.Type(applicationType),
 		ApplicationDate: date,
-		Status:          application_model.Applied,
-		CompanyName:     companyName,
+		Status:          company_model.Applied,
+		Company:         company,
 	}
 
-	return application_model.NewApplication(db, a)
+	return company_model.NewApplication(db, a)
 }
 
-func DeleteApplication(name string, companyName string) error {
-	return application_model.DeleteApplication(db.DB, name, companyName)
+func DeleteApplication(id uint) error {
+	return company_model.DeleteApplication(db.DB, id)
 }
 
-func UpdateApplication(name, applicationType, applicationDate, applicationStatus, companyName string) error {
+func UpdateApplication(id uint, name, applicationType, applicationDate, applicationStatus string) error {
 	db := db.DB
 
-	application, err := application_model.GetApplication(db, name, companyName)
+	application, err := company_model.GetApplication(db, id)
 
 	if err != nil {
 		return err
@@ -77,7 +76,7 @@ func UpdateApplication(name, applicationType, applicationDate, applicationStatus
 			return fmt.Errorf("'%s' is not a valid application type", applicationType)
 		}
 
-		application.Type = application_model.Type(applicationType)
+		application.Type = company_model.Type(applicationType)
 	}
 
 	if applicationDate != "" {
@@ -93,16 +92,16 @@ func UpdateApplication(name, applicationType, applicationDate, applicationStatus
 			return fmt.Errorf("'%s' is not a valid application status", applicationStatus)
 		}
 
-		application.Status = application_model.Status(applicationStatus)
+		application.Status = company_model.Status(applicationStatus)
 	}
 
-	return application_model.UpdateApplication(db, application)
+	return company_model.UpdateApplication(db, application)
 }
 
-func GetApplication(name string, companyName string) (*application_model.Application, error) {
-	return application_model.GetApplication(db.DB, name, companyName)
+func GetApplication(id uint) (*company_model.Application, error) {
+	return company_model.GetApplication(db.DB, id)
 }
 
-func GetApplications() ([]*application_model.Application, error) {
-	return application_model.GetApplications(db.DB)
+func GetApplications() ([]*company_model.Application, error) {
+	return company_model.GetApplications(db.DB)
 }

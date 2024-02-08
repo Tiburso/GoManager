@@ -1,34 +1,19 @@
-package application
+package company
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/Tiburso/GoManager/common"
-	"github.com/Tiburso/GoManager/models/company"
 	"gorm.io/gorm"
 )
 
-type ErrDuplicateApplication struct {
-	Name        string
-	CompanyName string
-}
-
-func (e ErrDuplicateApplication) Error() string {
-	return fmt.Sprintf("application with name %s already exists for company %s", e.Name, e.CompanyName)
-}
-
-func (e ErrDuplicateApplication) Unwrap() error {
-	return common.ErrAlreadyExist
-}
-
 type ErrApplicationNotFound struct {
-	Name        string
-	CompanyName string
+	id uint
 }
 
 func (e ErrApplicationNotFound) Error() string {
-	return fmt.Sprintf("application with name %s does not exist for company %s", e.Name, e.CompanyName)
+	return fmt.Sprintf("application with id %d does not exist", e.id)
 }
 
 func (e ErrApplicationNotFound) Unwrap() error {
@@ -77,30 +62,19 @@ const (
 )
 
 type Application struct {
-	gorm.Model
-	Name            string `gorm:"primaryKey"`
+	*gorm.Model
+	Name            string `gorm:"index"`
 	Type            Type
 	Status          Status
 	ApplicationDate time.Time
 
-	CompanyName string           `gorm:"primaryKey;unique"`
-	Company     *company.Company `gorm:"foreignKey:CompanyName;references:Name"`
+	Company   *Company
+	CompanyID uint
 }
 
 func NewApplication(db *gorm.DB, app *Application) error {
-	// check if application already exists
-	res := db.Limit(1).Where("name = ? AND company_name = ?", app.Name, app.CompanyName).Find(&Application{})
-
-	if res.Error != nil {
-		return res.Error
-	}
-
-	if res.RowsAffected > 0 {
-		return ErrDuplicateApplication{Name: app.Name, CompanyName: app.CompanyName}
-	}
-
 	// create application
-	res = db.Create(&app)
+	res := db.Create(&app)
 
 	if res.Error != nil {
 		return res.Error
@@ -109,45 +83,45 @@ func NewApplication(db *gorm.DB, app *Application) error {
 	return nil
 }
 
-func DeleteApplication(db *gorm.DB, name string, companyName string) error {
-	res := db.Where("name = ? AND company_name = ?", name, companyName).Delete(&Application{})
+func DeleteApplication(db *gorm.DB, id uint) error {
+	res := db.Delete(&Application{}, id)
 
 	if res.Error != nil {
 		return res.Error
 	}
 
 	if res.RowsAffected == 0 {
-		return ErrApplicationNotFound{Name: name, CompanyName: companyName}
+		return ErrApplicationNotFound{id: id}
 	}
 
 	return nil
 }
 
 func UpdateApplication(db *gorm.DB, a *Application) error {
-	res := db.Where("name = ? AND company_name = ?", a.Name, a.CompanyName).Updates(&a)
+	res := db.Save(&a)
 
 	if res.Error != nil {
 		return res.Error
 	}
 
 	if res.RowsAffected == 0 {
-		return ErrApplicationNotFound{Name: a.Name, CompanyName: a.CompanyName}
+		return ErrApplicationNotFound{id: a.ID}
 	}
 
 	return nil
 }
 
-func GetApplication(db *gorm.DB, name string, companyName string) (*Application, error) {
+func GetApplication(db *gorm.DB, id uint) (*Application, error) {
 	var app Application
 
-	res := db.Limit(1).Find(&app, "name = ? AND company_name = ?", name, companyName)
+	res := db.Preload("Company").First(&app, id)
 
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
 	if res.RowsAffected == 0 {
-		return nil, ErrApplicationNotFound{Name: name, CompanyName: companyName}
+		return nil, ErrApplicationNotFound{id: id}
 	}
 
 	return &app, nil
@@ -165,10 +139,10 @@ func GetApplications(db *gorm.DB) ([]*Application, error) {
 	return apps, nil
 }
 
-func GetCompanyApplications(db *gorm.DB, companyName string) ([]*Application, error) {
+func GetCompanyApplications(db *gorm.DB, company_id uint) ([]*Application, error) {
 	var apps []*Application
 
-	res := db.Find(&apps, "company_name = ?", companyName)
+	res := db.Where("company_id = ?", company_id).Find(&apps)
 
 	if res.Error != nil {
 		return nil, res.Error

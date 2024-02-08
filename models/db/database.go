@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/Tiburso/GoManager/common"
-	"github.com/Tiburso/GoManager/models/application"
 	"github.com/Tiburso/GoManager/models/company"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -33,5 +32,5 @@ func ConnectDatabase() error {
 }
 
 func AutoMigrate() error {
-	return DB.AutoMigrate(&company.Company{}, &application.Application{})
+	return DB.AutoMigrate(&company.Company{}, &company.Application{})
 }

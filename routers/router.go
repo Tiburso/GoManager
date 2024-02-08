@@ -51,16 +51,15 @@ func SetupRoutes(r *mux.Router) {
 	// company endpoints
 	g.HandleFunc("/companies", api.GetCompaniesHandler).Methods("GET")
 	g.HandleFunc("/companies", api.CreateCompanyHandler).Methods("POST")
-
 	g.HandleFunc("/companies/{id}", api.GetCompany).Methods("GET")
 	g.HandleFunc("/companies/{id}", api.EditCompanyHandler).Methods("PUT")
 	g.HandleFunc("/companies/{id}", api.DeleteCompanyHandler).Methods("DELETE")
 
 	// application endpoints
-	g.HandleFunc("/companies/{company_id}/applications", api.CreateApplicationHandler).Methods("POST")
-	g.HandleFunc("/companies/{company_id}/applications", api.GetApplicationsHandler).Methods("GET")
-	g.HandleFunc("/companies/{company_id}/applications/{id}", api.UpdateApplicationHandler).Methods("PUT")
-	g.HandleFunc("/companies/{company_id}/applications/{id}", api.DeleteApplicationHandler).Methods("DELETE")
+	g.HandleFunc("/applications", api.CreateApplicationHandler).Methods("POST")
+	g.HandleFunc("/applications", api.GetApplicationsHandler).Methods("GET")
+	g.HandleFunc("/applications/{id}", api.UpdateApplicationHandler).Methods("PUT")
+	g.HandleFunc("/applications/{id}", api.DeleteApplicationHandler).Methods("DELETE")
 
 }
 

@@ -3,8 +3,8 @@ package structs
 type Application struct {
 	Name            string `json:"name"`
 	Type            string `json:"type"`
-	Status          string `json:"status,omitempty"`
 	ApplicationDate string `json:"application_date"`
+	Status          string `json:"status,omitempty"`
 
-	// Company *Company `json:"company_name,omitempty"`
+	CompanyID uint `json:"company_id,omitempty"`
 }

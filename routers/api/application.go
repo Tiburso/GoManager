@@ -14,14 +14,6 @@ import (
 func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	company_id, err := typeconversions.ConverToID(mux.Vars(r)["company_id"])
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(err.Error())
-		return
-	}
-
 	// Initialize the application variable
 	application := &structs.Application{}
 
@@ -38,7 +30,7 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		application.Name,
 		application.Type,
 		application.ApplicationDate,
-		company_id)
+		application.CompanyID)
 
 	// TODO: need to check now if the error is duplicate app or missing company
 	// for now just return the error

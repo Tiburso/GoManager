@@ -47,12 +47,12 @@ func SetupRoutes(r *mux.Router) {
 
 	// define health check endpoint
 	g.HandleFunc("/health", api.HealthCheckHandler).Methods("GET")
-	
+
 	// company endpoints
 	g.HandleFunc("/companies", api.GetCompaniesHandler).Methods("GET")
 	g.HandleFunc("/companies", api.CreateCompanyHandler).Methods("POST")
-	
-	g.HandleFunc("/companies/{id}", api.GetCompanyWithApplicationsHandler).Methods("GET")
+
+	g.HandleFunc("/companies/{id}", api.GetCompany).Methods("GET")
 	g.HandleFunc("/companies/{id}", api.EditCompanyHandler).Methods("PUT")
 	g.HandleFunc("/companies/{id}", api.DeleteCompanyHandler).Methods("DELETE")
 

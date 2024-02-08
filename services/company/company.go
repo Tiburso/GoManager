@@ -86,7 +86,7 @@ func UpdateCompany(id uint, candidatePortal string) error {
 	return nil
 }
 
-func GetCompanyWithApplications(id uint) (*company_model.Company, error) {
+func GetCompany(id uint) (*company_model.Company, error) {
 	db := db.DB
 
 	company, err := company_model.GetCompany(db, id)

@@ -5,8 +5,10 @@ import (
 	"net/http"
 
 	"github.com/Tiburso/GoManager/common/structs"
+	typeconversions "github.com/Tiburso/GoManager/common/type_conversions"
 	company_service "github.com/Tiburso/GoManager/services/company"
 	"github.com/Tiburso/GoManager/services/convert"
+	"github.com/gorilla/mux"
 )
 
 func CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +25,7 @@ func CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := company_service.CreateCompany(
+	c, err := company_service.CreateCompany(
 		company.Name,
 		company.CandidatePortal,
 	)
@@ -36,6 +38,7 @@ func CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send a JSON response
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(convert.ToCompany(c))
 }
 
 func GetCompaniesHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,14 +58,22 @@ func GetCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(convert.ToCompanies(companies))
 }
 
-func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
+func GetCompany(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Get company from the query name
-	name := r.URL.Query().Get("name")
+	// Get company id from the URL and convert it to an uint
+	id, err := typeconversions.ConverToID(mux.Vars(r)["id"])
+
+	// If the conversion failed, return a 400
+	//TODO: Check how to do this in a more modular way
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
 
 	// Get the company from the db
-	company, err := company_service.GetCompanyWithApplications(name)
+	company, err := company_service.GetCompany(id)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -78,6 +89,14 @@ func GetCompanyWithApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 func EditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	id, err := typeconversions.ConverToID(mux.Vars(r)["id"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
 	// Decode JSON from the request body
 	var company_struct structs.Company
 	decoder := json.NewDecoder(r.Body)
@@ -88,8 +107,8 @@ func EditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call the service
-	err := company_service.UpdateCompany(
-		company_struct.Name,
+	err = company_service.UpdateCompany(
+		id,
 		company_struct.CandidatePortal,
 	)
 
@@ -106,11 +125,16 @@ func EditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 func DeleteCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Get company from the query name
-	name := r.URL.Query().Get("name")
+	id, err := typeconversions.ConverToID(mux.Vars(r)["id"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
 
 	// Delete the company from the db
-	err := company_service.DeleteCompany(name)
+	err = company_service.DeleteCompany(id)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

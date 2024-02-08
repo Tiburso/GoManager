@@ -101,7 +101,7 @@ func TestUpdateNonExistingCompany(t *testing.T) {
 func TestGetCompany(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	c, err := GetCompanyWithApplications(1)
+	c, err := GetCompany(1)
 
 	assert.NoError(t, err)
 	unittest.AssertExists(t, c)

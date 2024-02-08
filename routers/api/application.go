@@ -5,38 +5,40 @@ import (
 	"net/http"
 
 	"github.com/Tiburso/GoManager/common/structs"
+	typeconversions "github.com/Tiburso/GoManager/common/type_conversions"
 	"github.com/Tiburso/GoManager/services/company"
 	"github.com/Tiburso/GoManager/services/convert"
+	"github.com/gorilla/mux"
 )
 
 func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Initialize the application variable
-	updateMap := make(map[string]string)
+	company_id, err := typeconversions.ConverToID(mux.Vars(r)["company_id"])
 
-	// Decode JSON from the request body
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&updateMap); err != nil {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	// Check if the required fields are present
-	name, name_ok := updateMap["name"]
-	company_name, company_name_ok := updateMap["company_name"]
-	application_date, application_date_ok := updateMap["application_date"]
-	application_type, application_type_ok := updateMap["type"]
+	// Initialize the application variable
+	application := &structs.Application{}
 
-	if !name_ok || !company_name_ok || !application_date_ok || !application_type_ok {
+	// Decode JSON from the request body
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(application); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Missing name, company_name, application_date or application_type")
+		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
 	// call the service
-	err := company.CreateApplication(name, application_type, application_date, company_name)
+	app, err := company.CreateApplication(
+		application.Name,
+		application.Type,
+		application.ApplicationDate,
+		company_id)
 
 	// TODO: need to check now if the error is duplicate app or missing company
 	// for now just return the error
@@ -48,25 +50,22 @@ func CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send a JSON response
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(convert.ToApplication(app))
 }
 
 func DeleteApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Initialize the application variable
-	vars := r.URL.Query()
+	id, err := typeconversions.ConverToID(mux.Vars(r)["id"])
 
-	name, name_ok := vars["name"]
-	company_name, company_name_ok := vars["company_name"]
-
-	if !name_ok || !company_name_ok {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Missing name or company_name")
+		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
 	// Delete the application from the db
-	err := company.DeleteApplication(name[0], company_name[0])
+	err = company.DeleteApplication(id)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -80,6 +79,14 @@ func DeleteApplicationHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	id, err := typeconversions.ConverToID(mux.Vars(r)["id"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
 	// Decode JSON from the request body
 	var application_struct structs.Application
 	decoder := json.NewDecoder(r.Body)
@@ -89,19 +96,13 @@ func UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if application_struct.Name == "" || application_struct.CompanyName == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Missing name or company_name")
-		return
-	}
-
 	// call the service
-	err := company.UpdateApplication(
+	err = company.UpdateApplication(
+		id,
 		application_struct.Name,
 		application_struct.Type,
 		application_struct.ApplicationDate,
 		application_struct.Status,
-		application_struct.CompanyName,
 	)
 
 	if err != nil {
@@ -127,5 +128,5 @@ func GetApplicationsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(convert.ToApplicationCreations(applications))
+	json.NewEncoder(w).Encode(convert.ToApplications(applications))
 }

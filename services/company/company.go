@@ -23,15 +23,15 @@ func isValidURL(url string) bool {
 	return match
 }
 
-func CreateCompany(name, candidatePortal string) error {
+func CreateCompany(name, candidatePortal string) (*company_model.Company, error) {
 	db := db.DB
 
 	if name == "" {
-		return fmt.Errorf("missing name")
+		return nil, fmt.Errorf("missing name")
 	}
 
 	if candidatePortal == "" || !isValidURL(candidatePortal) {
-		return company_model.ErrCompanyInvalidURL{URL: candidatePortal}
+		return nil, company_model.ErrCompanyInvalidURL{URL: candidatePortal}
 	}
 
 	company := &company_model.Company{
@@ -42,10 +42,10 @@ func CreateCompany(name, candidatePortal string) error {
 	err := company_model.NewCompany(db, company)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return company, nil
 }
 
 func DeleteCompany(id uint) error {

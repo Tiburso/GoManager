@@ -26,25 +26,29 @@ func IsValidStatus(s string) bool {
 	return false
 }
 
-func CreateApplication(name string, applicationType string, applicationDate string, companyId uint) error {
+func CreateApplication(
+	name string,
+	applicationType string,
+	applicationDate string,
+	companyId uint) (*company_model.Application, error) {
 	db := db.DB
 
 	// Application date must be a valid date
 	date, err := time.Parse("2006-01-02", applicationDate)
 	if err != nil {
-		return fmt.Errorf("'%s' is not a valid date", applicationDate)
+		return nil, fmt.Errorf("'%s' is not a valid date", applicationDate)
 	}
 
 	// Check if the application type is valid
 	if !IsValidType(applicationType) {
-		return company_model.ErrInvalidApplicationType{Type: applicationType}
+		return nil, company_model.ErrInvalidApplicationType{Type: applicationType}
 	}
 
 	// Check if the company exists
 	company, err := company_model.GetCompany(db, companyId)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	a := &company_model.Application{
@@ -55,7 +59,13 @@ func CreateApplication(name string, applicationType string, applicationDate stri
 		Company:         company,
 	}
 
-	return company_model.NewApplication(db, a)
+	err = company_model.NewApplication(db, a)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return a, nil
 }
 
 func DeleteApplication(id uint) error {

@@ -3,7 +3,6 @@ package company
 import (
 	"testing"
 
-	application_model "github.com/Tiburso/GoManager/models/application"
 	"github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
 	"github.com/Tiburso/GoManager/models/unittest"
@@ -13,55 +12,37 @@ import (
 func TestCreateApplication(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := CreateApplication(
+	a, err := CreateApplication(
 		"Application 2",
-		string(application_model.Internship),
+		string(company.Internship),
 		"2023-01-01",
-		"Company 1")
-
-	assert.NoError(t, err)
-
-	a, err := application_model.GetApplication(db.DB, "Application 2", "Company 1")
+		1)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, a)
 	unittest.AssertExists(t, a)
 }
 
-func TestCreateDuplicateApplication(t *testing.T) {
-	assert.NoError(t, unittest.PrepareTestDatabase())
-
-	err := CreateApplication(
-		"Application 1",
-		string(application_model.Internship),
-		"2023-01-01",
-		"Company 1")
-
-	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrDuplicateApplication{}, err)
-	}
-}
-
 func TestCreateApplicationWithInvalidType(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := CreateApplication("Test Company",
+	_, err := CreateApplication("Test Company",
 		"invalid type",
 		"2023-01-01",
-		"Company 1")
+		1)
 
 	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrInvalidApplicationType{}, err)
+		assert.IsType(t, company.ErrInvalidApplicationType{}, err)
 	}
 }
 
 func TestCreateApplicationWithNoCompany(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := CreateApplication("Test Company",
-		string(application_model.Internship),
+	_, err := CreateApplication("Test Company",
+		string(company.Internship),
 		"2023-01-01",
-		"")
+		99999)
 
 	if assert.Error(t, err) {
 		assert.IsType(t, company.ErrCompanyNotFound{}, err)
@@ -71,14 +52,14 @@ func TestCreateApplicationWithNoCompany(t *testing.T) {
 func TestDeleteApplication(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := DeleteApplication("Application 1", "Company 1")
+	err := DeleteApplication(1)
 
 	assert.NoError(t, err)
 
-	a, err := application_model.GetApplication(db.DB, "Application 1", "Company 1")
+	a, err := company.GetApplication(db.DB, 1)
 
 	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
+		assert.IsType(t, company.ErrApplicationNotFound{}, err)
 	}
 	assert.Nil(t, a)
 }
@@ -86,65 +67,56 @@ func TestDeleteApplication(t *testing.T) {
 func TestDeleteApplicationInvalid(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := DeleteApplication("Application 1", "")
+	err := DeleteApplication(99999)
 
 	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
-	}
-
-	err = DeleteApplication("", "Company 1")
-
-	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
+		assert.IsType(t, company.ErrApplicationNotFound{}, err)
 	}
 }
 
 func TestUpdateApplication(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := UpdateApplication("Application 1",
-		string(application_model.Internship),
+	// Get initial version of application
+
+	a, _ := company.GetApplication(db.DB, 1)
+
+	// Confirm the application has status != "Applied"
+	assert.NotEqual(t, company.Applied, a.Status)
+
+	err := UpdateApplication(1,
+		"Application 1",
+		string(company.Internship),
 		"2023-01-01",
-		string(application_model.Applied),
-		"Company 1")
+		string(company.Applied))
 
 	assert.NoError(t, err)
 
-	a, err := application_model.GetApplication(db.DB, "Application 1", "Company 1")
+	a, err = company.GetApplication(db.DB, 1)
 
 	assert.NoError(t, err)
 	unittest.AssertExists(t, a)
+	assert.Equal(t, company.Applied, a.Status)
 }
 
 func TestUpdateApplicationInvalid(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	err := UpdateApplication(
+	err := UpdateApplication(9999,
 		"Application 1",
-		string(application_model.Internship),
+		string(company.Internship),
 		"2023-01-01",
-		string(application_model.Applied),
-		"")
+		string(company.Applied))
 
 	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
-	}
-
-	err = UpdateApplication("Application 1",
-		string(application_model.Internship),
-		"2023-01-01",
-		string(application_model.Applied),
-		"Company 2")
-
-	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
+		assert.IsType(t, company.ErrApplicationNotFound{}, err)
 	}
 }
 
 func TestGetApplication(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	a, err := GetApplication("Application 1", "Company 1")
+	a, err := GetApplication(1)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, a)
@@ -153,18 +125,10 @@ func TestGetApplication(t *testing.T) {
 func TestGetApplicationInvalid(t *testing.T) {
 	assert.NoError(t, unittest.PrepareTestDatabase())
 
-	a, err := GetApplication("Application 1", "")
+	a, err := GetApplication(99999)
 
 	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
-	}
-
-	assert.Nil(t, a)
-
-	a, err = GetApplication("", "Company 1")
-
-	if assert.Error(t, err) {
-		assert.IsType(t, application_model.ErrApplicationNotFound{}, err)
+		assert.IsType(t, company.ErrApplicationNotFound{}, err)
 	}
 
 	assert.Nil(t, a)

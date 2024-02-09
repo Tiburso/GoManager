@@ -18,8 +18,6 @@ export async function getCompanies() : Promise<Company[] | null> {
 
       const data = await res.json();
 
-      console.log(data);
-
       return data.companies;
   } catch (error) {
     console.error(error);

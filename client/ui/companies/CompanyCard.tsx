@@ -40,7 +40,7 @@ export default function CompanyCard({ company }: { company: Company }) {
       
       {showModal && (
         <Modal onClose={() => setShowModal(false)} title="Update company">
-          <CompanyForm action={
+          <CompanyForm edit action={
             async (formData: FormData) => {
               try {
                 // Here company id should never be null

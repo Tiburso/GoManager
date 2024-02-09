@@ -16,11 +16,12 @@ export default function CompanyForm({
   action,
   onClose,
   company,
+  edit,
 }: {
-  // action is a function that must return a message
   action: (formData: FormData) => Promise<message>;
   onClose: () => void;
   company?: Company;
+  edit?: boolean;
 }) {
   const { pending } = useFormStatus();
 
@@ -45,6 +46,7 @@ export default function CompanyForm({
         <div className={style.form}>
           <label htmlFor="name">Name</label>
           <input
+            disabled={edit}
             required
             type="text"
             id="name"

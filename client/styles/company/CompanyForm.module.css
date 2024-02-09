@@ -15,6 +15,12 @@
   margin-bottom: 20px;
 }
 
+.form input:disabled {
+  cursor: not-allowed;
+  background-color: rgba(126, 126, 126, 0.61);
+  border: 1px solid rgba(54, 7, 7, 0.61);
+}
+
 .form input::placeholder {
   font-weight: 400;
 }

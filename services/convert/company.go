@@ -2,12 +2,14 @@ package convert
 
 import (
 	"github.com/Tiburso/GoManager/common/structs"
+	typeconversions "github.com/Tiburso/GoManager/common/type_conversions"
 	company_model "github.com/Tiburso/GoManager/models/company"
 	"github.com/Tiburso/GoManager/models/db"
 )
 
 func ToCompany(c *company_model.Company) *structs.Company {
 	return &structs.Company{
+		ID:              typeconversions.ConvertToString(c.ID),
 		Name:            c.Name,
 		CandidatePortal: c.CandidatePortal,
 	}

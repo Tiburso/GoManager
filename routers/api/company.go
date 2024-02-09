@@ -55,7 +55,8 @@ func GetCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send a JSON response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(convert.ToCompanies(companies))
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"companies": convert.ToCompanies(companies)})
 }
 
 func GetCompany(w http.ResponseWriter, r *http.Request) {

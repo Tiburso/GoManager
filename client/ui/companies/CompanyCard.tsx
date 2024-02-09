@@ -22,11 +22,7 @@ export default function CompanyCard({ company }: { company: Company }) {
 
   return (
     <div className={style.card}>
-      <Link
-        className={style.link}
-        href={`/companies/${company.id}`}
-        key={company.id}
-      >
+      <Link href={company.candidate_portal}>
         <h2>{company.name}</h2>
         <p>{company.candidate_portal}</p>
       </Link>

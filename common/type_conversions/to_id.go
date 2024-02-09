@@ -13,3 +13,7 @@ func ConverToID(id string) (uint, error) {
 
 	return uint(idInt), nil
 }
+
+func ConvertToString(id uint) string {
+	return strconv.Itoa(int(id))
+}

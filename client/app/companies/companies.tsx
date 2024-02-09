@@ -61,6 +61,7 @@ export default function Companies({ companies }: { companies: Company[] }) {
       <Searchbar type="text" placeholder="Search for company" />
       <div className={style.cards}>
         {companies.map((company: Company) => (
+          console.log(company),
           <CompanyCard key={company.id} company={company} />
         ))}
       </div>
